@@ -286,7 +286,7 @@ extension String {
             let formatter = NumberFormatter()
             formatter.locale = Locale(identifier: "EN")
             formatter.numberStyle = .currency
-            formatter.currencySymbol = ""
+            formatter.currencySymbol = "IQD"
 
             formatter.maximumFractionDigits = 0
             if let str = formatter.string(for: value) {
@@ -296,6 +296,8 @@ extension String {
         return ""
     }
 }
+
+
 
 
 import CoreLocation

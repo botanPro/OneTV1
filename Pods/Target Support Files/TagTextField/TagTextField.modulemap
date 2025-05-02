@@ -1,0 +1,6 @@
+framework module TagTextField {
+  umbrella header "TagTextField-umbrella.h"
+
+  export *
+  module * { export * }
+}

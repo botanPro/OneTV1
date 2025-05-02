@@ -1,0 +1,6 @@
+framework module PullToDismissTransition {
+  umbrella header "PullToDismissTransition-umbrella.h"
+
+  export *
+  module * { export * }
+}

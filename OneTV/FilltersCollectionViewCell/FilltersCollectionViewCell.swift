@@ -15,9 +15,7 @@ class FilltersCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        FilterView.layer.borderWidth = 0.7
-        FilterView.layer.borderColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-        FilterView.layer.cornerRadius = 16
+
     }
 
 }

@@ -1,0 +1,6 @@
+framework module PSMeter {
+  umbrella header "PSMeter-umbrella.h"
+
+  export *
+  module * { export * }
+}

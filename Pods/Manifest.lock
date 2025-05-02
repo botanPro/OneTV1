@@ -1,0 +1,437 @@
+PODS:
+  - AEOTPTextField (1.2.6)
+  - Alamofire (5.10.2)
+  - AlertToast (1.3.9)
+  - AZDialogView (1.3.8)
+  - BSGridCollectionViewLayout (1.2.5)
+  - BSImagePicker (2.10.3):
+    - BSGridCollectionViewLayout (= 1.2.5)
+    - BSImageView (= 1.0.3)
+  - BSImageView (1.0.3)
+  - CHIPageControl (0.1.8):
+    - CHIPageControl/Aji (= 0.1.8)
+    - CHIPageControl/Aleppo (= 0.1.8)
+    - CHIPageControl/Chimayo (= 0.1.8)
+    - CHIPageControl/Fresno (= 0.1.8)
+    - CHIPageControl/Jalapeno (= 0.1.8)
+    - CHIPageControl/Jaloro (= 0.1.8)
+    - CHIPageControl/Paprika (= 0.1.8)
+    - CHIPageControl/Puya (= 0.1.8)
+  - CHIPageControl/Aji (0.1.8)
+  - CHIPageControl/Aleppo (0.1.8)
+  - CHIPageControl/Chimayo (0.1.8)
+  - CHIPageControl/Fresno (0.1.8)
+  - CHIPageControl/Jalapeno (0.1.8)
+  - CHIPageControl/Jaloro (0.1.8)
+  - CHIPageControl/Paprika (0.1.8)
+  - CHIPageControl/Puya (0.1.8)
+  - CollieGallery (0.6.0)
+  - Cosmos (25.0.1)
+  - CRRefresh (1.1.3)
+  - CustomLoader (1.1.0)
+  - DDHTimerControl (1.0.0)
+  - DropDown (2.3.13)
+  - Drops (1.7.0)
+  - EFInternetIndicator (0.4.0):
+    - EFInternetIndicator/Interface (= 0.4.0)
+  - EFInternetIndicator/Interface (0.4.0):
+    - SwiftMessages
+  - EmptyDataSet-Swift (5.0.0)
+  - EPSignature (1.0.6)
+  - FCAlertView (1.4.0)
+  - Firebase (11.8.1):
+    - Firebase/Core (= 11.8.1)
+  - Firebase/Analytics (11.8.1):
+    - Firebase/Core
+  - Firebase/Auth (11.8.1):
+    - Firebase/CoreOnly
+    - FirebaseAuth (~> 11.8.1)
+  - Firebase/Core (11.8.1):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (~> 11.8.0)
+  - Firebase/CoreOnly (11.8.1):
+    - FirebaseCore (~> 11.8.1)
+  - Firebase/Messaging (11.8.1):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 11.8.0)
+  - FirebaseAnalytics (11.8.0):
+    - FirebaseAnalytics/AdIdSupport (= 11.8.0)
+    - FirebaseCore (~> 11.8.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - FirebaseAnalytics/AdIdSupport (11.8.0):
+    - FirebaseCore (~> 11.8.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleAppMeasurement (= 11.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - FirebaseAppCheckInterop (11.8.0)
+  - FirebaseAuth (11.8.1):
+    - FirebaseAppCheckInterop (~> 11.0)
+    - FirebaseAuthInterop (~> 11.0)
+    - FirebaseCore (~> 11.8.0)
+    - FirebaseCoreExtension (~> 11.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GTMSessionFetcher/Core (< 5.0, >= 3.4)
+    - RecaptchaInterop (~> 100.0)
+  - FirebaseAuthInterop (11.8.0)
+  - FirebaseCore (11.8.1):
+    - FirebaseCoreInternal (~> 11.8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Logger (~> 8.0)
+  - FirebaseCoreExtension (11.8.0):
+    - FirebaseCore (~> 11.8.0)
+  - FirebaseCoreInternal (11.8.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebaseInstallations (11.8.0):
+    - FirebaseCore (~> 11.8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (11.8.0):
+    - FirebaseCore (~> 11.8.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Reachability (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - nanopb (~> 3.30910.0)
+  - FMPhotoPicker (1.3.0)
+  - FSPagerView (0.8.3)
+  - GoogleAppMeasurement (11.8.0):
+    - GoogleAppMeasurement/AdIdSupport (= 11.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/AdIdSupport (11.8.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 11.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (11.8.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.0.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.0.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/MethodSwizzler (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.0.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.0.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/Reachability (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/UserDefaults (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GravitySliderFlowLayout (1.0)
+  - GTMSessionFetcher/Core (4.4.0)
+  - GTProgressBar (0.3.3)
+  - HMSegmentedControl (1.5.6)
+  - LIHImageSlider (1.0.8)
+  - lottie-ios (4.5.1)
+  - MBRadioCheckboxButton (2.0)
+  - MHLoadingButton (0.1.3)
+  - MobilliumQRCodeReader (1.1.1)
+  - MXPagerView (0.2.1)
+  - MXParallaxHeader (1.1.0)
+  - MXSegmentedControl (1.1.0)
+  - MXSegmentedPager (4.0.0):
+    - MXPagerView (~> 0.2)
+    - MXParallaxHeader (~> 1.0)
+    - MXSegmentedControl (~> 1.1)
+  - MZTimerLabel (0.5.4)
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
+  - Navajo-Swift (2.1.0)
+  - PhoneNumberKit (3.8.0):
+    - PhoneNumberKit/PhoneNumberKitCore (= 3.8.0)
+    - PhoneNumberKit/UIKit (= 3.8.0)
+  - PhoneNumberKit/PhoneNumberKitCore (3.8.0)
+  - PhoneNumberKit/UIKit (3.8.0):
+    - PhoneNumberKit/PhoneNumberKitCore
+  - PromisesObjC (2.4.0)
+  - PSMeter (0.1.5):
+    - GTProgressBar
+    - Navajo-Swift
+  - PullToDismissTransition (0.7.10)
+  - PureLayout (3.1.9)
+  - RadioButton (1.0)
+  - Realm (20.0.1):
+    - Realm/Headers (= 20.0.1)
+  - Realm/Headers (20.0.1)
+  - RealmSwift (20.0.1):
+    - Realm (= 20.0.1)
+  - RecaptchaInterop (100.0.0)
+  - RSLoadingView (1.1.3)
+  - SBDropDown (0.1.2)
+  - SCPageControl (0.4.0)
+  - ScrollingPageControl (0.1.2)
+  - SDWebImage (5.20.1):
+    - SDWebImage/Core (= 5.20.1)
+  - SDWebImage/Core (5.20.1)
+  - Slider2 (0.1.1)
+  - SwiftAlertView (2.2.1)
+  - SwiftMessages (10.0.1):
+    - SwiftMessages/App (= 10.0.1)
+  - SwiftMessages/App (10.0.1)
+  - SwiftyJSON (5.0.2)
+  - TagsList (0.1.0)
+  - TagTextField (1.0.0)
+  - Toast-Swift (5.0.1)
+
+DEPENDENCIES:
+  - AEOTPTextField
+  - Alamofire
+  - AlertToast
+  - AZDialogView
+  - BSImagePicker (~> 2.8)
+  - CHIPageControl (~> 0.1.3)
+  - CHIPageControl/Aji
+  - CHIPageControl/Aleppo
+  - CHIPageControl/Chimayo
+  - CHIPageControl/Fresno
+  - CHIPageControl/Jalapeno
+  - CHIPageControl/Jaloro
+  - CHIPageControl/Paprika
+  - CHIPageControl/Puya
+  - CollieGallery
+  - Cosmos
+  - CRRefresh
+  - CustomLoader
+  - DDHTimerControl
+  - DropDown
+  - Drops (from `https://github.com/omaralbeik/Drops.git`, tag `1.7.0`)
+  - EFInternetIndicator
+  - EmptyDataSet-Swift (~> 5.0.0)
+  - EPSignature
+  - FCAlertView
+  - Firebase
+  - Firebase/Analytics
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Messaging
+  - FMPhotoPicker (~> 1.3.0)
+  - FSPagerView
+  - GravitySliderFlowLayout
+  - HMSegmentedControl
+  - LIHImageSlider
+  - lottie-ios
+  - MBRadioCheckboxButton
+  - MHLoadingButton
+  - MobilliumQRCodeReader
+  - MXSegmentedPager
+  - MZTimerLabel
+  - PhoneNumberKit (~> 3.3)
+  - PSMeter
+  - PullToDismissTransition
+  - PureLayout
+  - RadioButton
+  - RealmSwift
+  - RSLoadingView
+  - SBDropDown
+  - SCPageControl
+  - ScrollingPageControl
+  - SDWebImage
+  - Slider2
+  - SwiftAlertView (~> 2.2.1)
+  - SwiftyJSON
+  - TagsList
+  - TagTextField
+  - Toast-Swift (~> 5.0.1)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AEOTPTextField
+    - Alamofire
+    - AlertToast
+    - AZDialogView
+    - BSGridCollectionViewLayout
+    - BSImagePicker
+    - BSImageView
+    - CHIPageControl
+    - CollieGallery
+    - Cosmos
+    - CRRefresh
+    - CustomLoader
+    - DDHTimerControl
+    - DropDown
+    - EFInternetIndicator
+    - EmptyDataSet-Swift
+    - EPSignature
+    - FCAlertView
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseAppCheckInterop
+    - FirebaseAuth
+    - FirebaseAuthInterop
+    - FirebaseCore
+    - FirebaseCoreExtension
+    - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - FMPhotoPicker
+    - FSPagerView
+    - GoogleAppMeasurement
+    - GoogleDataTransport
+    - GoogleUtilities
+    - GravitySliderFlowLayout
+    - GTMSessionFetcher
+    - GTProgressBar
+    - HMSegmentedControl
+    - LIHImageSlider
+    - lottie-ios
+    - MBRadioCheckboxButton
+    - MHLoadingButton
+    - MobilliumQRCodeReader
+    - MXPagerView
+    - MXParallaxHeader
+    - MXSegmentedControl
+    - MXSegmentedPager
+    - MZTimerLabel
+    - nanopb
+    - Navajo-Swift
+    - PhoneNumberKit
+    - PromisesObjC
+    - PSMeter
+    - PullToDismissTransition
+    - PureLayout
+    - RadioButton
+    - Realm
+    - RealmSwift
+    - RecaptchaInterop
+    - RSLoadingView
+    - SBDropDown
+    - SCPageControl
+    - ScrollingPageControl
+    - SDWebImage
+    - Slider2
+    - SwiftAlertView
+    - SwiftMessages
+    - SwiftyJSON
+    - TagsList
+    - TagTextField
+    - Toast-Swift
+
+EXTERNAL SOURCES:
+  Drops:
+    :git: https://github.com/omaralbeik/Drops.git
+    :tag: 1.7.0
+
+CHECKOUT OPTIONS:
+  Drops:
+    :git: https://github.com/omaralbeik/Drops.git
+    :tag: 1.7.0
+
+SPEC CHECKSUMS:
+  AEOTPTextField: a275823fde05601c5da7f8fb66aaecb41289b370
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  AlertToast: e8db15da727beff75500bcf33a78cd617f408fa1
+  AZDialogView: 5a8d1a9e52f08e1a9cc1b32d304a95880d3197a2
+  BSGridCollectionViewLayout: 333dcb457a5a3bdd9212607ab5756553dcfe06cb
+  BSImagePicker: 07404254f2fcdaf5a2eb403c0f8c337267ce8738
+  BSImageView: a149459433a2687157d034c78e059d30ac7f2544
+  CHIPageControl: 76b35c8309d8dd155e869c109cc6ffc0aaa465ff
+  CollieGallery: b8fcf63af6b31add2f435f5aee4742ae3b84cb3b
+  Cosmos: 02db0a1c953107049bfd2d7af19ceef55ecb7e98
+  CRRefresh: 1415d4ae06837fa7bb064c44f2e102f3ef517044
+  CustomLoader: 9a2d86bc12480d43a10776c59ca1e51474e2a847
+  DDHTimerControl: 5dfe11a9d3cfe70ebe054437ad4ef7e89a99fe2a
+  DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
+  Drops: 5155b9ede54a2666b2129ac33f0734509b9f0784
+  EFInternetIndicator: a6077679e15191889a783a06624390b73e8109dc
+  EmptyDataSet-Swift: eb382c0c87a2d9c678077385a595cec52da38171
+  EPSignature: 3fa3b520c80717b98019723faa60a41794b03fbc
+  FCAlertView: fdddd63381898c1d1a5a20c9f084fbd2c6d12f8b
+  Firebase: 973c28133496aab0223e9ea99f0abafb9f91ad58
+  FirebaseAnalytics: 4fd42def128146e24e480e89f310e3d8534ea42b
+  FirebaseAppCheckInterop: 7bf86d55a2b7e9bd91464120eba3e52e4b63b2e2
+  FirebaseAuth: ad59a1a7b161e75f74c39f70179d2482d40e2737
+  FirebaseAuthInterop: 651756e70d9a0b9160db39ead71fd5507dbb6c84
+  FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
+  FirebaseCoreExtension: 3d3f2017a00d06e09ab4ebe065391b0bb642565e
+  FirebaseCoreInternal: df24ce5af28864660ecbd13596fc8dd3a8c34629
+  FirebaseInstallations: 6c963bd2a86aca0481eef4f48f5a4df783ae5917
+  FirebaseMessaging: 487b634ccdf6f7b7ff180fdcb2a9935490f764e8
+  FMPhotoPicker: 954d3c3e72521baffecdc23422ae149fdde3cd63
+  FSPagerView: 670405b2f18e2a87fa37f20b00de783e562c25a8
+  GoogleAppMeasurement: fc0817122bd4d4189164f85374e06773b9561896
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  GravitySliderFlowLayout: bb9ae6a302b85821c9e0271c00533fae8091143b
+  GTMSessionFetcher: 75b671f9e551e4c49153d4c4f8659ef4f559b970
+  GTProgressBar: a480283ecb0ada50de16c71e634892826928f640
+  HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
+  LIHImageSlider: ddf90c3a07e6f571b0e57629177a49eaf5bf15a3
+  lottie-ios: 248b380fa1b97d18e792c37d90da7ab2aa0d6562
+  MBRadioCheckboxButton: 6e2a2cdc441e292e45b64c4e65eb8fc1fc05eef2
+  MHLoadingButton: 13bab47a3ce9d88df15638b7a5b73a8ac9f21077
+  MobilliumQRCodeReader: d819ebfb3efdbb8e2c7afd72eab7ccfa57636886
+  MXPagerView: ede184b5191b2ed689ccf05a750a9978cce42414
+  MXParallaxHeader: de3c867e10ba46e8f6e20c8ee1f2a910372b3b94
+  MXSegmentedControl: f39e46199a52cbc03b1c845e150215119f2542f5
+  MXSegmentedPager: 527ee76513c96e6607eebe473fe49b7ab4971616
+  MZTimerLabel: cd9bfb9304540ef2a9e163384fca9c978f0dbf83
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  Navajo-Swift: 57b93e73efbfbf452433efbff04402de56beff51
+  PhoneNumberKit: ec00ab8cef5342c1dc49fadb99d23fa7e66cf0ef
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PSMeter: f88995d922170cd37e04ccd19e6af78e800460a5
+  PullToDismissTransition: f0cea5041c447545384450aad967a2b2bd5d5f30
+  PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
+  RadioButton: 7ef053baf6ff0e7f9e777016c28e9ba4e330edba
+  Realm: 9572204903ef28caeb3c03bb30c1147f354ee3e7
+  RealmSwift: d230b44017a55a1ba97de6a944da1fe3bedb92b5
+  RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  RSLoadingView: c7749afdd455229643e8f34277d0695973a15b1a
+  SBDropDown: 4cb77fca0678f0715213a411bfa9842410602c53
+  SCPageControl: 8a8dfbba7d7d8c66487a317cb4c4578a7e4af27a
+  ScrollingPageControl: 94dc11078ee5d0cd6c11a1eef46aa181d70b227c
+  SDWebImage: 33d0f23bddeb5d209ae959153883247be6703713
+  Slider2: cc2c685bbf9da6e0e919cbf1aa687374a1c86612
+  SwiftAlertView: e61a63206f19e8e3295f13a58d6464fea4a6946a
+  SwiftMessages: 759b4a0bf5c3a116a0d7e8a34b098ba83c458625
+  SwiftyJSON: f5b1bf1cd8dd53cd25887ac0eabcfd92301c6a5a
+  TagsList: 45f0ded421b9d3af279c56f0609c5343b7010337
+  TagTextField: 521d5374944f77b542d485598a192608f52ee6ff
+  Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
+
+PODFILE CHECKSUM: 9ca1cfd5f529be21ed3cc63964966a72ad0841fb
+
+COCOAPODS: 1.16.2

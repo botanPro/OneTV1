@@ -19,24 +19,24 @@ import PSMeter
 import EFInternetIndicator
 import Drops
 
-
-class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, InternetStatusIndicable, PasswordEstimator{
+import PhoneNumberKit
+class Registration: UIViewController , UITextFieldDelegate, UITextViewDelegate, InternetStatusIndicable, PasswordEstimator{
     var internetConnectionIndicator:InternetViewIndicator?
-    @IBOutlet weak var NameWordView: UIView!
-    @IBOutlet weak var SubscribeCodeView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.SubscribeCodeView.layer.cornerRadius = 21.5
-        self.SubscribeCodeView.backgroundColor = .clear
-        self.SubscribeCodeView.layer.borderColor = UIColor.white.cgColor
-        self.SubscribeCodeView.layer.borderWidth = 1
-        self.NameWordView.layer.cornerRadius = self.NameWordView.bounds.width / 2
+        
+        self.Phone.placeHolderColor = .lightGray
+        self.Phone.keyboardType = .asciiCapable
+        self.Phone.withPrefix = false
+        self.Phone.withFlag = true
+        self.Phone.withExamplePlaceholder = false
+        self.Phone.placeholder = "750 123 45 67"
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)
         addDoneButtonOnKeyboard()
-        Email.configureEmailValidation()
-        Email.delegate = self
+        Phone.delegate = self
         firstName.delegate = self
         secondName.delegate = self
         Password.delegate = self
@@ -80,7 +80,7 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
         toolbar.setItems([flexSpace, done], animated: false)
         toolbar.isUserInteractionEnabled = true
 
-        Email.inputAccessoryView = toolbar
+        Phone.inputAccessoryView = toolbar
         firstName.inputAccessoryView = toolbar
         secondName.inputAccessoryView = toolbar
         Password.inputAccessoryView = toolbar
@@ -127,7 +127,7 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
     }
     
     @objc func doneButtonAction() {
-        Email.resignFirstResponder()
+        Phone.resignFirstResponder()
         firstName.resignFirstResponder()
         secondName.resignFirstResponder()
         Password.resignFirstResponder()
@@ -137,9 +137,15 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
     
     @IBOutlet weak var secondName: UITextField!
     @IBOutlet weak var firstName: UITextField!
-    @IBOutlet weak var Email: UITextField!
+    @IBOutlet weak var Phone: PhoneNumberTextField!
     @IBOutlet weak var Password: UITextField!
     @IBOutlet weak var ConfPassword: UITextField!
+    
+    
+    
+    
+
+    
     
     @IBAction func dismiss(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
@@ -168,106 +174,82 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
             }
         }
     
+    let partialFormatter = PartialFormatter()
+    var phone = ""
     @IBAction func CreateAccount(_ sender: Any) {
         if CheckInternet.Connection(){
-            if self.firstName.text?.trimmingCharacters(in: .whitespaces) != "" && self.secondName.text?.trimmingCharacters(in: .whitespaces) != "" && self.Email.text?.trimmingCharacters(in: .whitespaces) != "" && self.Password.text?.trimmingCharacters(in: .whitespaces) != "" && self.ConfPassword.text?.trimmingCharacters(in: .whitespaces) != ""{
-                guard let email = Email.text, isValidEmail(email) else {
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "Please enter a valid email address")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "يرجى إدخال عنوان بريد إلكتروني صالح")
+            if self.firstName.text?.trimmingCharacters(in: .whitespaces) != "" && self.Phone.text?.trimmingCharacters(in: .whitespaces) != "" && self.Password.text?.trimmingCharacters(in: .whitespaces) != ""{
+                self.LoadingView()
+                let str = self.Phone.text!
+                if str.count > 0{
+                    let index = str.index(str.startIndex, offsetBy: 0)
+                    if str[index] == "0" && self.Phone.currentRegion == "IQ"{
+                        self.phone = self.Phone.text!
+                        self.phone.remove(at: index)
                     }else{
-                        self.showDrop(title: "", message: "تکایە ناونیشانی ئیمەیڵێکی دروست دابنێ")
+                        self.phone = self.Phone.text!
                     }
-                    return
                 }
-                
-                
-                if self.Password.text! != self.ConfPassword.text!{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "The password must be more than 8 letters")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "كلمة المرور غير متطابقة")
+            
+                let formattedPhoneNumber = partialFormatter.formatPartial(self.phone).replacingOccurrences(of: " ", with: "")
+                self.phone = formattedPhoneNumber.convertedDigitsToLocale(Locale(identifier: "EN"))
+                print(self.phone)
+
+                LoginAPi.SendOTP(phone: self.phone) { status, transaction_id in
+                    if status == true{
+                        self.alert.dismiss(animated: true, completion: {
+                            let vc = self.storyboard?.instantiateViewController(withIdentifier: "ConfirmOTP") as! ConfirmOTP
+                            vc.modalPresentationStyle = .fullScreen
+                            vc.modalTransitionStyle = .crossDissolve
+                            vc.ActivationCode = self.Password.text!
+                            vc.name = self.firstName.text!
+                            vc.phone = self.phone
+                            vc.transaction_id = transaction_id
+                            self.present(vc, animated: true)
+                        })
                     }else{
-                        self.showDrop(title: "", message: "وشەی نهێنی هاوتا نییە")
+                        self.alert.dismiss(animated: true, completion: {})
                     }
-                    self.showDrop(title: "", message: "Password not match")
-                    return
                 }
-                
-                
-                if self.IsPasswordStrong == false{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "The password must be more than 8 letters")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "يجب أن تكون كلمة المرور أكثر من 8 أحرف")
-                    }else{
-                        self.showDrop(title: "", message: "وشەی نهێنی دەبێت لە ٨ پیت زیاتر بێت")
-                    }
-                    return
-                }
-                
-                
-                LoginAPi.Registration(email: self.Email.text!, Password: self.Password.text!, firstname: self.firstName.text!, lastname: self.secondName.text!, password_confirmation: self.ConfPassword.text!) { status in
-                    UserDefaults.standard.setValue("true", forKey: "login")
-                    UserDefaults.standard.setValue(self.Email.text!, forKey: "phone")
-                   
-                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "Home") as! TabbarView
-                    vc.modalPresentationStyle = .fullScreen
-                    vc.modalTransitionStyle = .crossDissolve
-                    
-                    self.present(vc, animated: true)
-                }
-                
-                
+               
                 
             }else{
-                if self.firstName.text! == ""{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "Please write your first name")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "الرجاء كتابة اسمك الاول")
-                    }else{
-                        self.showDrop(title: "", message: "تکایە ناوی یەکەمت بنووسە")
-                    }
-                    return
-                }
-                
-                if self.Email.text! == ""{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "Please enter your Email")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "الرجاء إدخال برید الکتروني")
-                    }else{
-                        self.showDrop(title: "", message: "تکایە ئیمەیلەکەت بنووسە")
-                    }
-                    return
-                }
-                
-                
-                if self.Password.text! == ""{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "Please enter your password")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "الرجاء إدخال كلمة المرور الخاصة بك")
-                    }else{
-                        self.showDrop(title: "", message: "تکایە وشەی نهێنی بنوسە")
+                self.alert.dismiss(animated: true, completion: {
+                    if self.firstName.text! == ""{
+                        if XLanguage.get() == .English{
+                            self.showDrop(title: "", message: "Please write your full name")
+                        }else if XLanguage.get() == .Arabic{
+                            self.showDrop(title: "", message: "الرجاء كتابة اسمك الكامل")
+                        }else{
+                            self.showDrop(title: "", message: "تکایە ناوی تەواوی خۆت بنوسە")
+                        }
+                        return
                     }
                     
-                    return
-                }
-                
-                if self.ConfPassword.text! == ""{
-                    if XLanguage.get() == .English{
-                        self.showDrop(title: "", message: "Please enter confirmed password")
-                    }else if XLanguage.get() == .Arabic{
-                        self.showDrop(title: "", message: "الرجاء إدخال كلمة المرور الخاصة بك")
-                    }else{
-                        self.showDrop(title: "", message: "تکایە وشەی نهێنی پشتڕاستکردنەوە دابنێ")
+                    if self.Phone.text! == ""{
+                        if XLanguage.get() == .English{
+                            self.showDrop(title: "", message: "Please enter your phone number")
+                        }else if XLanguage.get() == .Arabic{
+                            self.showDrop(title: "", message: "الرجاء إدخال رقم هاتفك")
+                        }else{
+                            self.showDrop(title: "", message: "تکایە ژمارەی موبایلەکە دابنێ")
+                        }
+                        return
                     }
-                    return
-                }
-
+                    
+                    if self.Password.text! == ""{
+                        if XLanguage.get() == .English{
+                            self.showDrop(title: "", message: "Please enter your activation code")
+                        }else if XLanguage.get() == .Arabic{
+                            self.showDrop(title: "", message: "الرجاء إدخال رمز التفعيل الخاص بك")
+                        }else{
+                            self.showDrop(title: "", message: "تکایە کۆدی چالاککردنەکەت دابنێ")
+                        }
+                        
+                        return
+                    }
+                })
+                
             }
         }else{
             if XLanguage.get() == .English{

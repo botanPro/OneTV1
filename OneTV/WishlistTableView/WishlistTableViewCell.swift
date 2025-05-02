@@ -8,7 +8,13 @@
 import UIKit
 
 class WishlistTableViewCell: UITableViewCell {
-
+    @IBOutlet weak var Delete: UIButton!
+    
+    @IBOutlet weak var Desc: UITextView!
+    @IBOutlet weak var Views: UILabel!
+    @IBOutlet weak var Rate: UILabel!
+    @IBOutlet weak var Name: UILabel!
+    @IBOutlet weak var Imagee: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

@@ -88,7 +88,7 @@ class Languagebutton: UIButton{
         }
         
     }
-    
+     
     override func awakeFromNib() {
         super.awakeFromNib()
         NotificationCenter.default.addObserver(self, selector: #selector(Languagebutton.update), name: NSNotification.Name(rawValue: "LanguageChanged"), object: nil)
@@ -100,20 +100,6 @@ class Languagebutton: UIButton{
 
 
 class LanguageTabBarItem: UITabBarItem{
-    
-    
-    @IBInspectable var ArabicTextSize : CGFloat = 0{
-        didSet{
-            update()
-        }
-    }
-    
-    @IBInspectable var EnglishTextSize : CGFloat = 0{
-        didSet{
-            update()
-        }
-    }
-    
     
     @IBInspectable var ArabicText : String = ""{
         didSet{
@@ -132,36 +118,36 @@ class LanguageTabBarItem: UITabBarItem{
     }
     
     @objc func update(){
-        
         if XLanguage.get() == .Arabic{
             self.title = ArabicText
             self.setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: ArabicTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
+                    NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: 11)!,
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
                 ], for: .normal)
         }else if XLanguage.get() == .Kurdish{
-            self.setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: ArabicTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
-                ], for: .normal)
             self.title = KurdishText
-        }else if XLanguage.get() == .English{
             self.setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: UIFont(name: "ArialRoundedMTBold", size: EnglishTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
+                    NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: 11)!,
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
                 ], for: .normal)
+        }else if XLanguage.get() == .English{
             self.title = EnglishText
+            self.setTitleTextAttributes(
+                [
+                    NSAttributedString.Key.font: UIFont(name: "ArialRoundedMTBold", size: 11)!,
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
+                ], for: .normal)
+         
         }
-        
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         NotificationCenter.default.addObserver(self, selector: #selector(LanguageTabBarItem.update), name: NSNotification.Name(rawValue: "LanguageChanged"), object: nil)
     }
+    
 }
 
 
@@ -221,7 +207,6 @@ class LanguageLable: UILabel{
 
 
 class LanguagePlaceHolder: UITextField{
-    
     
     @IBInspectable var ArabicTextSize : CGFloat = 0{
         didSet{
@@ -352,20 +337,20 @@ class LanguageBarItem: UIBarButtonItem{
             self.setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: ArabicTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
                 ], for: .normal)
         }else if XLanguage.get() == .Kurdish{
             self.setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: UIFont(name: "PeshangDes2", size: ArabicTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
                 ], for: .normal)
             self.title = KurdishText
         }else if XLanguage.get() == .English{
             self.setTitleTextAttributes(
                 [
                     NSAttributedString.Key.font: UIFont(name: "ArialRoundedMTBold", size: EnglishTextSize)!,
-                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0.07560480386, green: 0.2257080078, blue: 0.3554315865, alpha: 1)
+                    NSAttributedString.Key.foregroundColor: #colorLiteral(red: 0, green: 0.8049960732, blue: 0.9077830315, alpha: 1)
                 ], for: .normal)
             self.title = EnglishText
         }

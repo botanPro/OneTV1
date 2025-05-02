@@ -9,21 +9,68 @@ import UIKit
 
 class NotificationVC: UIViewController {
 
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    
+    var NotificationArray : [NotificationsObject] = []
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.tableView.estimatedRowHeight = 96
+        self.tableView.rowHeight = UITableView.automaticDimension
+        tableView.register(UINib(nibName: "NotificationTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        GetNotification()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    func GetNotification(){
+        if CheckInternet.Connection(){
+            LoginAPi.GetNotification { nots in
+                self.NotificationArray = nots
+                self.tableView.reloadData()
+            }
+        }
     }
-    */
+
 
 }
+
+
+
+
+extension NotificationVC : UITableViewDelegate , UITableViewDataSource{
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if NotificationArray.count == 0{
+ 
+            return 0
+        }
+        return NotificationArray.count
+        
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell  = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NotificationTableViewCell
+        if NotificationArray.count != 0{
+            cell.Updatee(notif: self.NotificationArray[indexPath.row])
+        }
+        return cell
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
+        let verticalPadding: CGFloat = 3
+
+        let maskLayer = CALayer()
+        maskLayer.cornerRadius = 0
+        maskLayer.backgroundColor = UIColor.white.cgColor
+        maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding/2)
+        cell.layer.mask = maskLayer
+    }
+    
+}
+
+

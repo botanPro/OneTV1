@@ -9,7 +9,7 @@
 import UIKit
 
 
-class HomeCatagoryCollectionViewCell: UICollectionViewCell {
+class CastCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var Vieww: UIView!
     @IBOutlet weak var CatImagee: UIImageView!

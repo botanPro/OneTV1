@@ -13,7 +13,7 @@ import PhoneNumberKit
 import RSLoadingView
 import EFInternetIndicator
 import Drops
-class SendOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
+class ConfirmOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
     
     
     var internetConnectionIndicator:InternetViewIndicator?
@@ -22,52 +22,13 @@ class SendOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
         self.dismiss(animated: true)
     }
     
-    
     var ResetPassURL : URL!
-    var is_from_forgetpass = false
-    private var lastTapTime: TimeInterval = 0
-    @IBAction func ResendCode(_ sender: Any) {
-        let currentTime = Date().timeIntervalSince1970
-           guard currentTime - lastTapTime > 30 else { return } // 30s delay
-           lastTapTime = currentTime
-        self.view.endEditing(true)
-        self.LoadingView()
-        if is_from_forgetpass == true{
-            ResetPassURL = URL(string: "https://iq-flowers.com/api/send_otp_pass_reset");
-        }else{
-            ResetPassURL = URL(string: "https://iq-flowers.com/api/send_otp");
-        }
-        
-        let param: [String: Any] = [
-            "phone":self.phone
-        ]
-        
-       print(self.phone)
-        
-        AF.request(ResetPassURL!, method: .post, parameters: param).responseData { response in
-            switch response.result
-            {
-            case .success:
-                let jsonData = JSON(response.data ?? "")
-                print(jsonData)
-                self.alert.dismiss(animated: true, completion: {
-                    self.showDrop(title: "", message: jsonData["message"].stringValue)
-                })
-            case .failure(let error):
-                self.alert.dismiss(animated: true, completion: nil)
-                print(error);
-            }
-        }
-    }
-    
-    
+
     let loadingView = RSLoadingView(effectType: RSLoadingView.Effect.twins)
-    @IBOutlet weak var OTPView: UIView!
     @IBOutlet weak var OTPCode: UITextField!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.Style(vieww: OTPView)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -126,13 +87,7 @@ class SendOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
          self.OTPCode.becomeFirstResponder()
      }
 
-    
-    func Style(vieww : UIView){
-        vieww.layer.borderWidth = 0.5
-        vieww.layer.borderColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-        vieww.layer.cornerRadius = 27
-    }
-    
+
     
     func showDrop(title: String, message: String) {
         let drop = Drop(
@@ -177,42 +132,40 @@ class SendOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
     var otp = ""
     var phone = ""
     var name = ""
-    var password = ""
+    var transaction_id = ""
+    var ActivationCode = ""
     var cityID = 0
     
     @IBAction func Confirm(_ sender: Any) {
         if CheckInternet.Connection(){
-            print(IsFromSignUp)
             if self.OTPCode.text?.trimmingCharacters(in: .whitespaces) != ""{
-                if self.IsFromSignUp == false{
-                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "ForgetPasswordVC") as! ForgetPassword
-                    vc.modalPresentationStyle = .fullScreen
-                    vc.phone = self.phone
-                    vc.otp = self.OTPCode.text!
-                    self.present(vc, animated: true)
-                }else{
-                    print(self.phone)
-                    LoginAPi.CreateAccount(name: self.name, password: self.password, phone: self.phone, otp: self.OTPCode.text!, city_id: "\(self.cityID)") { status in
-                        if status == "success"{
-                            UserDefaults.standard.setValue("true", forKey: "login")
-                            UserDefaults.standard.setValue(self.phone, forKey: "phone")
-                            UserDefaults.standard.set("false", forKey: "AddressAdded")
-                           
-                            LoginAPi.UpdateCity_ID(city_id: self.cityID) { status in
-                                UserDefaults.standard.set(self.cityID, forKey: "CityId")
-                                let vc = self.storyboard?.instantiateViewController(withIdentifier: "Home") as! TabbarView
-                                vc.modalPresentationStyle = .fullScreen
-                                vc.modalTransitionStyle = .crossDissolve
+                self.LoadingView()
+                LoginAPi.VerifyOTP(phone: self.phone, transaction_id: self.transaction_id, OTP: self.OTPCode.text!) { status in
+                    if status == true{
+                        LoginAPi.Registration(fullname: self.name, activationcode: self.ActivationCode, mobile: self.phone) {  status, info in
+                            if status == "success"{
+                                self.alert.dismiss(animated: true, completion: {
+                                    UserDefaults.standard.setValue("true", forKey: "login")
+                                    UserDefaults.standard.setValue(self.phone, forKey: "phone")
+                                    
+                                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "Home") as! TabbarView
+                                    vc.modalPresentationStyle = .fullScreen
+                                    vc.modalTransitionStyle = .crossDissolve
+                                    
+                                    self.present(vc, animated: true)
+                                })
                                 
-                                self.present(vc, animated: true)
-                               
+                            }else{
+                                self.alert.dismiss(animated: true, completion: {})
                             }
-                            
                         }
+                        
+                    }else{
+                        self.alert.dismiss(animated: true, completion: {})
                     }
-                  }
-                }else{
-                    RSLoadingView.hide(from: self.view)
+                }
+            }else{
+                self.alert.dismiss(animated: true, completion: {
                     if self.OTPCode.text == ""{
                         if XLanguage.get() == .English{
                             self.showDrop(title: "", message: "Please enter OTP code.")
@@ -223,7 +176,8 @@ class SendOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicable{
                         }
                         
                     }
-                }
+                })
+            }
             
         }else{
             if XLanguage.get() == .English{

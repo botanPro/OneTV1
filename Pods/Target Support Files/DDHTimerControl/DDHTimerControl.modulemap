@@ -1,0 +1,6 @@
+framework module DDHTimerControl {
+  umbrella header "DDHTimerControl-umbrella.h"
+
+  export *
+  module * { export * }
+}
