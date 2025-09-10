@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>921098329-r19c3d22gf15c0lm65hv7hht3vb271p2.apps.googleusercontent.com</string>
+	<string>921098329-8ai2bs4m6mf3khrkce16ukbn8vahpjft.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.921098329-r19c3d22gf15c0lm65hv7hht3vb271p2</string>
+	<string>com.googleusercontent.apps.921098329-8ai2bs4m6mf3khrkce16ukbn8vahpjft</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCSdElvA3iuMwY1eFMPNxBDyPEbF9kTEBg</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.eaak.one-tv</string>
+	<string>com.eaak.onetveaak</string>
 	<key>PROJECT_ID</key>
 	<string>onetv-de12e</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:921098329:ios:33b277e8c6bbd1439a3948</string>
+	<string>1:921098329:ios:60c3116a4d1e6c649a3948</string>
 </dict>
 </plist>
