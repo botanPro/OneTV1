@@ -118,58 +118,27 @@ extension SearchSeries : UITableViewDelegate , UITableViewDataSource{
             loadingIndicator.tag = 999 // For easy reference
             self.view.addSubview(loadingIndicator)
         }
-        if UserDefaults.standard.string(forKey: "login") == "true"{
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-            LoginAPi.getUserInfo { info in
-                if info.planId == 0{
-                    DispatchQueue.main.async {
-                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                            loadingIndicator.removeFromSuperview()
-                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                            myVC.modalPresentationStyle = .overFullScreen
-                            self.present(myVC, animated: true)
-                        }
-                    }
-                    
-                }else{
-                    HomeAPI.GetPaidItemById(i_id: self.Array[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                        if Astatus == "success"{
-                            if remark == "episode_video"{
-                                myVC.is_series = true
-                                myVC.EpisodesArray = episodes
-                            }else{
-                                myVC.is_series = false
-                            }
-                            myVC.RecommendedArray = related
-                            myVC.Series = items
-                            myVC.title = self.Array[indexPath.row].title
-                            DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                    loadingIndicator.removeFromSuperview()
-                                    myVC.modalPresentationStyle = .overFullScreen
-                                    self.present(myVC, animated: true)
-                                }
-                            }
-                            
-                            
-                        }
-                    }
-                }
-            }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+        
+        HomeAPI.GetFreeItemById(i_id: self.Array[indexPath.row].id) { [weak self] items, remark, episodes, related in
+            guard let self = self else { return }
             
-        }else{
             DispatchQueue.main.async {
                 if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
                     loadingIndicator.removeFromSuperview()
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                    myVC.modalPresentationStyle = .fullScreen
-                    self.present(myVC, animated: true)
                 }
+                
+                myVC.is_series = (remark == "episode_video")
+                myVC.EpisodesArray = episodes
+                myVC.RecommendedArray = related
+                myVC.Series = items
+                myVC.title = self.Array[indexPath.row].title
+                
+                myVC.modalPresentationStyle = .overFullScreen
+                self.present(myVC, animated: true)
             }
-            
         }
         
         

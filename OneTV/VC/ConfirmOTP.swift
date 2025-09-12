@@ -142,7 +142,8 @@ class ConfirmOTP: UIViewController , UITextFieldDelegate , InternetStatusIndicab
                 self.LoadingView()
                 LoginAPi.VerifyOTP(phone: self.phone, transaction_id: self.transaction_id, OTP: self.OTPCode.text!) { status in
                     if status == true{
-                        LoginAPi.Registration(fullname: self.name, activationcode: self.ActivationCode, mobile: self.phone) {  status, info in
+                        let deviceId = UIDevice.current.identifierForVendor?.uuidString
+                        LoginAPi.Registration(fullname: self.name, activationcode: self.ActivationCode, mobile: self.phone, deviceId: deviceId ?? "") {  status, info in
                             if status == "success"{
                                 self.alert.dismiss(animated: true, completion: {
                                     UserDefaults.standard.setValue("true", forKey: "login")

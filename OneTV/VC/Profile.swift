@@ -18,6 +18,8 @@ import RSLoadingView
 import PSMeter
 import EFInternetIndicator
 import Drops
+import Alamofire
+
 
 
 class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, InternetStatusIndicable{
@@ -53,6 +55,35 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
     
     
     
+    func getActiveOption(completion :@escaping (_ status: Int)->()){
+        let stringUrl = URL(string: "https://one-tv.net/api/active");
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(openCartApi.token)"
+        ]
+
+        
+        AF.request(stringUrl!, method: .get, headers: headers).responseData { response in
+            switch response.result
+            {
+            case .success:
+                let jsonData = JSON(response.data ?? "")
+                print(jsonData)
+                let data = jsonData.arrayValue
+                for act in data{
+                    print(act["is_active"].intValue)
+                    completion(act["is_active"].intValue)
+                }
+                
+            case .failure(let error):
+                print(error);
+            }
+        }
+    }
+    
+    
+    
+    
     @IBOutlet weak var LastStack: UIView!
     
     
@@ -72,26 +103,52 @@ class Profile: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
             self.SelectedLangs.text = "کوردی"
         }
         
-            if UserDefaults.standard.string(forKey: "login") == "true"{
-                DispatchQueue.main.async {
+        if UserDefaults.standard.string(forKey: "login") == "true"{
+            DispatchQueue.main.async {
                 LoginAPi.getUserInfo { [weak self] info in
                     guard let self = self else { return }
                     self.Name.text = info.username
                     self.Email.text = info.mobile
-                   
-                    if info.planId == 0{
-                        self.RemainingLable.isHidden = true
-                        self.EXPView.isHidden = true
-                    }else{
-                        self.RemainingLable.isHidden = false
-                        self.RemainingLable.text = info.exp
-                        self.EXPView.isHidden = false
+                    
+                    let dateString = info.exp
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    
+                    
+                    self.getActiveOption { active in
+                        if active == 1{
+                            self.EXPView.isHidden = true
+                            self.SubscribeCodeView.isHidden = true
+                        }else{
+                            if let expiryDate = dateFormatter.date(from: dateString) {
+                                if Date() > expiryDate {
+                                    self.EXPView.isHidden = true
+                                    self.RemainingLable.isHidden = true
+                                    self.SubscribeCodeView.isHidden = false
+                                }else{
+                                    self.EXPView.isHidden = false
+                                    self.RemainingLable.isHidden = false
+                                    self.RemainingLable.text = info.exp
+                                    self.SubscribeCodeView.isHidden = true
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+        
     }
     
+    
+    
+    
+    
+    
+    @IBAction func ContctUs(_ sender: Any) {
+        let socialVC = SocialLinksViewController()
+        self.navigationController?.pushViewController(socialVC, animated: true)
+    }
     
     
     override func viewDidLoad() {

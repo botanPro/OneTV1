@@ -64,6 +64,14 @@ class AllFreeMS: UIViewController, UIScrollViewDelegate{
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { _ in
+            self.MovieSeriesCollection.collectionViewLayout.invalidateLayout()
+        })
+    }
+
+    
     
     
     
@@ -71,9 +79,9 @@ class AllFreeMS: UIViewController, UIScrollViewDelegate{
     
     var MovieArray: [Item] = []
     
-    let sectionInsets = UIEdgeInsets(top: 0.0, left: 10.0, bottom: 0.0, right: 10.0)
+    let sectionInsets = UIEdgeInsets(top: 0.0, left: 11.0, bottom: 0.0, right: 11.0)
     var numberOfItemsPerRow: CGFloat = 3
-    let spacingBetweenCells: CGFloat = 10
+    let spacingBetweenCells: CGFloat = 11
     
 }
 
@@ -105,9 +113,27 @@ extension AllFreeMS : UICollectionViewDelegate , UICollectionViewDataSource , UI
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let totalSpacing = (3 * sectionInsets.left) + ((3 - 1) * 10)
-        let width = (collectionView.bounds.width - totalSpacing) / 3
-        return CGSize(width: width, height: 180)
+            
+            let isPad = UIDevice.current.userInterfaceIdiom == .pad
+            let isLandscape = UIDevice.current.orientation.isLandscape
+
+            var numberOfItemsPerRow: CGFloat = 3
+            var itemHeight: CGFloat = 180
+
+            if isPad {
+                numberOfItemsPerRow = 6
+                itemHeight = 245
+            } else if isLandscape {
+                numberOfItemsPerRow = 5
+                itemHeight = 210
+            }
+
+            let totalSpacing = (numberOfItemsPerRow + 1) * sectionInsets.left
+            let itemWidth = (collectionView.bounds.width - totalSpacing) / numberOfItemsPerRow
+
+            return CGSize(width: itemWidth, height: itemHeight)
+        
+
         
     }
     
@@ -128,9 +154,8 @@ extension AllFreeMS : UICollectionViewDelegate , UICollectionViewDataSource , UI
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+        return self.spacingBetweenCells
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         

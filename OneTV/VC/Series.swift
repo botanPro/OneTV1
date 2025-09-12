@@ -297,12 +297,15 @@ class Series: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate{
                 let createdAt = free["created_at"].stringValue
                 let updatedAt = free["updated_at"].stringValue
                 let ispaid = free["is_paid"].intValue
+                let awards = free["awards"].stringValue
+                let revenue = free["revenue"].stringValue
+                let budget = free["budget"].stringValue
                 let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                 let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                 let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                 let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid)
+                let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
                 FreeZone.append(freeZone)
             }
             
@@ -413,9 +416,24 @@ extension Series : UICollectionViewDelegate , UICollectionViewDataSource , UICol
  
         
         if collectionView == self.SeriesCollection{
-            let totalSpacing = (2 * sectionInsets.left) + ((2 - 1) * 10)
-            let width = (collectionView.bounds.width - totalSpacing) / 2
-            return CGSize(width: width, height: 300)
+            let isPad = UIDevice.current.userInterfaceIdiom == .pad
+            let isLandscape = UIDevice.current.orientation.isLandscape
+
+            var numberOfItemsPerRow: CGFloat = 2
+            var itemHeight: CGFloat = 300
+
+            if isPad {
+                numberOfItemsPerRow = 4
+                itemHeight = 400
+            } else if isLandscape {
+                numberOfItemsPerRow = 4
+                itemHeight = 330
+            }
+            
+            
+            let totalSpacing = (numberOfItemsPerRow * sectionInsets.left) + ((numberOfItemsPerRow - 1) * 10)
+            let width = (collectionView.bounds.width - totalSpacing) / numberOfItemsPerRow
+            return CGSize(width: width, height: itemHeight)
         }
         
 
@@ -475,56 +493,27 @@ extension Series : UICollectionViewDelegate , UICollectionViewDataSource , UICol
                 self.view.addSubview(loadingIndicator)
             }
             
-        if UserDefaults.standard.string(forKey: "login") == "true"{
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-            LoginAPi.getUserInfo { info in
-                if info.planId == 0{
-                    DispatchQueue.main.async {
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                            loadingIndicator.removeFromSuperview()
-                            myVC.modalPresentationStyle = .overFullScreen
-                            self.present(myVC, animated: true)
-                        }
+            
+            HomeAPI.GetFreeItemById(i_id: self.SeriesArray[indexPath.row].id) { [weak self] items, remark, episodes, related in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                        loadingIndicator.removeFromSuperview()
                     }
-                }else{
-                    HomeAPI.GetPaidItemById(i_id: self.SeriesArray[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                        if Astatus == "success"{
-                            if remark == "episode_video"{
-                                myVC.is_series = true
-                                myVC.EpisodesArray = episodes
-                            }else{
-                                myVC.is_series = false
-                            }
-                            myVC.RecommendedArray = related
-                            myVC.Series = items
-                            myVC.title = self.SeriesArray[indexPath.row].title
-                            DispatchQueue.main.async {
-                                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                    loadingIndicator.removeFromSuperview()
-                                    
-                                    myVC.modalPresentationStyle = .overFullScreen
-                                    self.present(myVC, animated: true)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }else{
-            DispatchQueue.main.async {
-                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                    loadingIndicator.removeFromSuperview()
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                    myVC.modalPresentationStyle = .fullScreen
+                    
+                    myVC.is_series = (remark == "episode_video")
+                    myVC.EpisodesArray = episodes
+                    myVC.RecommendedArray = related
+                    myVC.Series = items
+                    myVC.title = self.SeriesArray[indexPath.row].title
+                    
+                    myVC.modalPresentationStyle = .overFullScreen
                     self.present(myVC, animated: true)
                 }
             }
-            
-        }
         }
         
         

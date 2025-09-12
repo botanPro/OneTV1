@@ -160,10 +160,24 @@ extension SearchAllTVs : UICollectionViewDelegate , UICollectionViewDataSource ,
 
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    
-        let totalSpacing = (3 * sectionInsets.left) + ((3 - 1) * 10)
-        let width = (collectionView.bounds.width - totalSpacing) / 3
-        return CGSize(width: width, height: 120)
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        let isLandscape = UIDevice.current.orientation.isLandscape
+
+        var numberOfItemsPerRow: CGFloat = 3
+        var itemHeight: CGFloat = 120
+
+        if isPad {
+            numberOfItemsPerRow = 6
+            itemHeight = 120
+        } else if isLandscape {
+            numberOfItemsPerRow = 5
+            itemHeight = 120
+        }
+        
+        
+        let totalSpacing = (numberOfItemsPerRow * sectionInsets.left) + ((numberOfItemsPerRow - 1) * 10)
+        let width = (collectionView.bounds.width - totalSpacing) / numberOfItemsPerRow
+        return CGSize(width: width, height: itemHeight)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

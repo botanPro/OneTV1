@@ -254,13 +254,13 @@
                                                                             </imageView>
                                                                         </subviews>
                                                                     </stackView>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Free movies &amp; series" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hRS-yh-wAX" customClass="LanguageLable" customModule="OneTV" customModuleProvider="target">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Movies &amp; Series for you" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hRS-yh-wAX" customClass="LanguageLable" customModule="OneTV" customModuleProvider="target">
                                                                         <rect key="frame" x="32" y="6.3333333333333703" width="250" height="15.666666666666664"/>
                                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                                                         <color key="textColor" name="white"/>
                                                                         <nil key="highlightedColor"/>
                                                                         <userDefinedRuntimeAttributes>
-                                                                            <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="Free movies &amp; series"/>
+                                                                            <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="Movies &amp; Series for you"/>
                                                                             <userDefinedRuntimeAttribute type="number" keyPath="EnglishTextSize">
                                                                                 <real key="value" value="13"/>
                                                                             </userDefinedRuntimeAttribute>
@@ -760,16 +760,23 @@
                     </navigationItem>
                     <connections>
                         <outlet property="FreeCollection" destination="AiK-ap-uOV" id="XmM-Fe-8Ji"/>
+                        <outlet property="FreeStack" destination="Wnf-Mi-A0e" id="dak-Sq-ayq"/>
                         <outlet property="LiveTVCollection" destination="rHg-xZ-BcS" id="02Q-6P-aa1"/>
                         <outlet property="MostCollection" destination="hiQ-No-Nx5" id="lvE-wx-seA"/>
                         <outlet property="NewstCollection" destination="rIE-tZ-frC" id="2Mx-iT-Zln"/>
+                        <outlet property="NewstStack" destination="U8d-dU-4tb" id="7xP-7M-X4P"/>
                         <outlet property="OneTitile" destination="4nB-Sc-KEa" id="u5d-nQ-aBZ"/>
                         <outlet property="PageController" destination="22h-Yk-oQD" id="hDh-Gz-akL"/>
                         <outlet property="ReklamCollection" destination="4f1-be-Zyl" id="SW7-uV-krP"/>
                         <outlet property="ReviewdCollection" destination="RWx-Sk-o4j" id="xb5-By-8qB"/>
+                        <outlet property="ReviewdStack" destination="vDa-Je-fuL" id="Z0o-gc-KoE"/>
                         <outlet property="ScrollView" destination="vFg-xQ-nOD" id="6xp-kk-hZ9"/>
                         <outlet property="SliderCollection" destination="LbP-mD-gX8" id="IwD-cA-b7k"/>
+                        <outlet property="SliderHeight" destination="GCN-2g-jYp" id="lYF-xV-pTP"/>
                         <outlet property="SubScribeView" destination="w2g-jJ-IPP" id="o67-ep-6wo"/>
+                        <outlet property="TVsItem" destination="lZU-LB-QGv" id="Ylg-rJ-NXF"/>
+                        <outlet property="TVsStack" destination="XNU-4T-oB4" id="fOI-BP-YCu"/>
+                        <outlet property="ViewdStack" destination="B1F-CH-ocw" id="Y4l-Aw-kxi"/>
                         <segue destination="hjc-xc-iCq" kind="show" id="XLJ-0n-9mx"/>
                     </connections>
                 </viewController>
@@ -2897,6 +2904,9 @@
                                                                                     </view>
                                                                                 </subviews>
                                                                                 <gestureRecognizers/>
+                                                                                <connections>
+                                                                                    <outletCollection property="gestureRecognizers" destination="NjS-kx-nnt" appends="YES" id="UbE-mT-HXh"/>
+                                                                                </connections>
                                                                             </stackView>
                                                                         </subviews>
                                                                     </stackView>
@@ -3015,7 +3025,7 @@
                                                                                         <color key="textColor" name="Color"/>
                                                                                         <nil key="highlightedColor"/>
                                                                                         <userDefinedRuntimeAttributes>
-                                                                                            <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="My Orders"/>
+                                                                                            <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="Log Out"/>
                                                                                             <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="چوونە دەرەوە"/>
                                                                                             <userDefinedRuntimeAttribute type="string" keyPath="ArabicText" value="تسجيل الخروج"/>
                                                                                             <userDefinedRuntimeAttribute type="number" keyPath="EnglishTextSize">
@@ -3171,6 +3181,11 @@
                         <segue destination="Klt-2o-2tx" kind="show" id="bwM-3j-xWu"/>
                     </connections>
                 </tapGestureRecognizer>
+                <tapGestureRecognizer id="NjS-kx-nnt" userLabel="contact">
+                    <connections>
+                        <action selector="ContctUs:" destination="Eur-0k-l8W" id="K8N-hP-WW6"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2394.6564885496182" y="3491.5492957746483"/>
         </scene>
@@ -3182,7 +3197,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro" translatesAutoresizingMaskIntoConstraints="NO" id="52U-gq-ROg">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-03-07 at 11.53.09 PM 1" translatesAutoresizingMaskIntoConstraints="NO" id="52U-gq-ROg">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" translatesAutoresizingMaskIntoConstraints="NO" id="VOK-e4-5Np">
@@ -3250,6 +3265,15 @@
                                                                                     <userDefinedRuntimeAttribute type="color" keyPath="placeHolderColor">
                                                                                         <color key="value" red="0.89663357200000005" green="0.89663357200000005" blue="0.89663357200000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                                     </userDefinedRuntimeAttribute>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="code..."/>
+                                                                                    <userDefinedRuntimeAttribute type="number" keyPath="EnglishTextSize">
+                                                                                        <real key="value" value="14"/>
+                                                                                    </userDefinedRuntimeAttribute>
+                                                                                    <userDefinedRuntimeAttribute type="number" keyPath="ArabicTextSize">
+                                                                                        <real key="value" value="14"/>
+                                                                                    </userDefinedRuntimeAttribute>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="ArabicText" value=" الرمز..."/>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="کۆد..."/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                             </textField>
                                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LnD-lw-OpM">
@@ -3415,7 +3439,7 @@
                                         </subviews>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bYR-7k-ARl">
-                                        <rect key="frame" x="25" y="35" width="30" height="30"/>
+                                        <rect key="frame" x="25" y="60" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="30" id="6dh-iA-Tkl"/>
                                             <constraint firstAttribute="height" constant="30" id="na6-IC-8WI"/>
@@ -3430,10 +3454,10 @@
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="Oh8-k1-EE1" firstAttribute="top" secondItem="bYR-7k-ARl" secondAttribute="bottom" id="7J1-xP-haw"/>
                                     <constraint firstAttribute="bottom" secondItem="Oh8-k1-EE1" secondAttribute="bottom" constant="400" id="7Ps-7z-AFb"/>
                                     <constraint firstItem="Oh8-k1-EE1" firstAttribute="top" secondItem="VOK-e4-5Np" secondAttribute="top" constant="65" id="TGB-T1-fk1"/>
                                     <constraint firstItem="bYR-7k-ARl" firstAttribute="leading" secondItem="VOK-e4-5Np" secondAttribute="leading" constant="25" id="Xbe-7z-BTH"/>
+                                    <constraint firstItem="bYR-7k-ARl" firstAttribute="top" secondItem="VOK-e4-5Np" secondAttribute="top" constant="60" id="dSu-D9-1eq"/>
                                     <constraint firstItem="Oh8-k1-EE1" firstAttribute="leading" secondItem="VOK-e4-5Np" secondAttribute="leading" constant="25" id="l4c-R9-s5l"/>
                                     <constraint firstItem="Oh8-k1-EE1" firstAttribute="centerX" secondItem="VOK-e4-5Np" secondAttribute="centerX" id="lHJ-ip-rGZ"/>
                                     <constraint firstAttribute="trailing" secondItem="Oh8-k1-EE1" secondAttribute="trailing" constant="25" id="vv1-GW-hkU"/>
@@ -4293,12 +4317,14 @@
                         <outlet property="Director" destination="02E-Ph-rfy" id="4cN-6U-WE9"/>
                         <outlet property="EpisodeStack" destination="RYP-5x-kkJ" id="AAt-7s-4zb"/>
                         <outlet property="EpisodesColleciton" destination="sVb-RH-J2h" id="5WY-Cu-Ix7"/>
+                        <outlet property="ImageHeight" destination="g4D-vE-Ye4" id="Pc4-rf-SQ8"/>
                         <outlet property="Imagee" destination="i3T-Eg-Ej2" id="klV-Qn-Fhx"/>
                         <outlet property="Name" destination="ztE-k9-umz" id="Pb6-mM-mkg"/>
                         <outlet property="PlayView" destination="WAB-PQ-QbM" id="ZGc-I3-EuI"/>
                         <outlet property="Rate" destination="GqV-QN-REB" id="SXu-gv-wYj"/>
                         <outlet property="RecommendedCollection" destination="d1W-vo-gf2" id="LAZ-Ru-SAT"/>
                         <outlet property="Revenue" destination="mMr-N0-Tgl" id="U0D-5p-foC"/>
+                        <outlet property="ShadowHeiht" destination="D5z-oJ-ggQ" id="ybx-20-w4g"/>
                         <outlet property="TeamB" destination="HXg-4o-hZM" id="eJ6-eV-Kxt"/>
                         <outlet property="TeamView" destination="Okb-cD-BEc" id="eJl-ne-3lc"/>
                         <outlet property="Views" destination="Vs3-R7-rzM" id="QR5-o7-Xhs"/>
@@ -4330,7 +4356,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro" translatesAutoresizingMaskIntoConstraints="NO" id="Wia-rE-JdN">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-03-07 at 11.53.09 PM 1" translatesAutoresizingMaskIntoConstraints="NO" id="Wia-rE-JdN">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xk5-UE-y5f">
@@ -4454,7 +4480,7 @@
                                                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="xeU-u3-3j1">
                                                                         <rect key="frame" x="12" y="8" width="319" height="39"/>
                                                                         <subviews>
-                                                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="activation code..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vYH-dl-rn1" customClass="LanguagePlaceHolder" customModule="OneTV" customModuleProvider="target">
+                                                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="activation code..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vYH-dl-rn1">
                                                                                 <rect key="frame" x="0.0" y="2" width="289" height="35"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="35" id="jkq-ka-GAu"/>
@@ -4466,15 +4492,15 @@
                                                                                     <userDefinedRuntimeAttribute type="color" keyPath="placeHolderColor">
                                                                                         <color key="value" red="0.89663357200000005" green="0.89663357200000005" blue="0.89663357200000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                                     </userDefinedRuntimeAttribute>
-                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="activation code..."/>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="code..."/>
                                                                                     <userDefinedRuntimeAttribute type="number" keyPath="EnglishTextSize">
                                                                                         <real key="value" value="14"/>
                                                                                     </userDefinedRuntimeAttribute>
                                                                                     <userDefinedRuntimeAttribute type="number" keyPath="ArabicTextSize">
                                                                                         <real key="value" value="14"/>
                                                                                     </userDefinedRuntimeAttribute>
-                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="ArabicText" value="رمز التفعيل..."/>
-                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="کۆدی چالاککردن..."/>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="ArabicText" value=" الرمز..."/>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="کۆد..."/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                             </textField>
                                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6qN-16-aKZ">
@@ -4605,6 +4631,9 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="Privacy Policy"/>
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="سیاسەتی تایبەتمەندی"/>
                                                                                 </userDefinedRuntimeAttributes>
+                                                                                <connections>
+                                                                                    <action selector="privacy:" destination="eAa-Kc-8gB" eventType="touchUpInside" id="7Lg-0o-ll1"/>
+                                                                                </connections>
                                                                             </button>
                                                                         </subviews>
                                                                     </stackView>
@@ -4740,7 +4769,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro" translatesAutoresizingMaskIntoConstraints="NO" id="ccD-hE-2XO">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-03-07 at 11.53.09 PM 1" translatesAutoresizingMaskIntoConstraints="NO" id="ccD-hE-2XO">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="one tv copy" translatesAutoresizingMaskIntoConstraints="NO" id="WgI-Cn-rzM">
@@ -4908,7 +4937,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro" translatesAutoresizingMaskIntoConstraints="NO" id="orv-nJ-eJD">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-03-07 at 11.53.09 PM 1" translatesAutoresizingMaskIntoConstraints="NO" id="orv-nJ-eJD">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="one tv copy" translatesAutoresizingMaskIntoConstraints="NO" id="hcK-da-pRZ">
@@ -5087,7 +5116,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro" translatesAutoresizingMaskIntoConstraints="NO" id="CW8-B6-iv8">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screenshot 2025-03-07 at 11.53.09 PM 1" translatesAutoresizingMaskIntoConstraints="NO" id="CW8-B6-iv8">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="one tv copy" translatesAutoresizingMaskIntoConstraints="NO" id="CY1-3S-ZF9">

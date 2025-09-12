@@ -20,11 +20,89 @@ import EFInternetIndicator
 import Drops
 
 import PhoneNumberKit
+import Alamofire
 class Registration: UIViewController , UITextFieldDelegate, UITextViewDelegate, InternetStatusIndicable, PasswordEstimator{
     var internetConnectionIndicator:InternetViewIndicator?
     
+    
+    
+    @IBAction func privacy(_ sender: Any) {
+        LoginAPi.GetPrivacyPage { result in
+            DispatchQueue.main.async {
+                if result.isEmpty {
+                    // Show error message if no data
+                    let alert = UIAlertController(
+                        title: "Error",
+                        message: "Could not load about pages",
+                        preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                } else {
+                    let combinedVC = CombinedAboutViewController(aboutPages: result)
+                    self.present(combinedVC, animated: true)
+                }
+            }
+        }
+    }
+    
+    func getActiveOption(completion :@escaping (_ status: Int)->()){
+        let stringUrl = URL(string: "https://one-tv.net/api/active");
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(openCartApi.token)"
+        ]
+
+        
+        AF.request(stringUrl!, method: .get, headers: headers).responseData { response in
+            switch response.result
+            {
+            case .success:
+                let jsonData = JSON(response.data ?? "")
+                print(jsonData)
+                let data = jsonData.arrayValue
+                for act in data{
+                    print(act["is_active"].intValue)
+                    completion(act["is_active"].intValue)
+                }
+                
+            case .failure(let error):
+                print(error);
+            }
+        }
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if XLanguage.get() == .English{
+            self.Password.placeholder = "Password"
+        } else if XLanguage.get() == .Arabic{
+            self.Password.placeholder = "كلمة المرور"
+        } else {
+            self.Password.placeholder = "وشەی نهێنی"
+        }
+        
+        self.getActiveOption { active in
+            if active == 1{
+                if XLanguage.get() == .English{
+                    self.Password.placeholder = "Password"
+                } else if XLanguage.get() == .Arabic{
+                    self.Password.placeholder = "كلمة المرور"
+                } else {
+                    self.Password.placeholder = "وشەی نهێنی"
+                }
+            }else{
+                if XLanguage.get() == .English{
+                    self.Password.placeholder = "Activation Code"
+                } else if XLanguage.get() == .Arabic{
+                    self.Password.placeholder = "رمز التفعيل"
+                } else {
+                    self.Password.placeholder = "کۆدی چالاککردن"
+                }
+            }
+        }
+        
         
         self.Phone.placeHolderColor = .lightGray
         self.Phone.keyboardType = .asciiCapable
@@ -32,6 +110,7 @@ class Registration: UIViewController , UITextFieldDelegate, UITextViewDelegate, 
         self.Phone.withFlag = true
         self.Phone.withExamplePlaceholder = false
         self.Phone.placeholder = "750 123 45 67"
+        self.Phone.withDefaultPickerUI = true
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)

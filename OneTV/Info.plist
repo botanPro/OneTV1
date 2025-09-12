@@ -17,7 +17,7 @@
 			<string>Auth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.925197867368-6bvf4qlg6c60m71kh7g6e0uht2u02164</string>
+				<string>com.googleusercontent.apps.921098329-8ai2bs4m6mf3khrkce16ukbn8vahpjft</string>
 			</array>
 		</dict>
 		<dict>
@@ -27,7 +27,7 @@
 			<string>Bundle ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.iqflowers.iq</string>
+				<string>com.eaak.onetveaak</string>
 			</array>
 		</dict>
 	</array>
@@ -52,6 +52,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Peshang_Des_2.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -78,9 +82,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Peshang_Des_2.ttf</string>
-	</array>
 </dict>
 </plist>

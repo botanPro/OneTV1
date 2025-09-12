@@ -92,6 +92,8 @@ class PlayMovieVC: UIViewController {
             } else {
                 self.CostTextView.text = "بەڕێوەبەر:\(movie.team.director),\n\(movie.team.casts)"
             }
+            
+            
             self.Desc.text = movie.description
             let urlString = movie.image.portrait
             let url = URL(string: "https://one-tv.net/assets/images/item/portrait/\(urlString)")

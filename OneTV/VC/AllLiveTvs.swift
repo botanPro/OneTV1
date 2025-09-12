@@ -181,9 +181,24 @@ extension AllLiveTvs : UICollectionViewDelegate , UICollectionViewDataSource , U
         }
         
         
-        let totalSpacing = (3 * sectionInsets.left) + ((3 - 1) * 10)
-        let width = (collectionView.bounds.width - totalSpacing) / 3
-        return CGSize(width: width, height: 120)
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        let isLandscape = UIDevice.current.orientation.isLandscape
+
+        var numberOfItemsPerRow: CGFloat = 3
+        var itemHeight: CGFloat = 120
+
+        if isPad {
+            numberOfItemsPerRow = 6
+            itemHeight = 120
+        } else if isLandscape {
+            numberOfItemsPerRow = 5
+            itemHeight = 120
+        }
+        
+        
+        let totalSpacing = (numberOfItemsPerRow * sectionInsets.left) + ((numberOfItemsPerRow - 1) * 10)
+        let width = (collectionView.bounds.width - totalSpacing) / numberOfItemsPerRow
+        return CGSize(width: width, height: itemHeight)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -211,12 +226,12 @@ extension AllLiveTvs : UICollectionViewDelegate , UICollectionViewDataSource , U
         
         AudioServicesPlaySystemSound(1519)
         
-        let currentTime = Date().timeIntervalSince1970
-        guard currentTime - lastTapTime > 0.8 else { return } // 0.8s delay
-        lastTapTime = currentTime
-        
         
         if collectionView == self.AllTVsCollectionView {
+            let currentTime = Date().timeIntervalSince1970
+            guard currentTime - lastTapTime > 0.8 else { return } // 0.8s delay
+            lastTapTime = currentTime
+            
             guard indexPath.section < groupedChannels.count,
                   indexPath.row < groupedChannels[indexPath.section].channels.count else {
                 return
@@ -296,35 +311,35 @@ extension AllLiveTvs : UICollectionViewDelegate , UICollectionViewDataSource , U
         
         
         if collectionView == Categories {
-                    guard indexPath.item < groupedChannels.count else {
-                        return
-                    }
-                    
-                    self.selectedCategory = groupedChannels[indexPath.item].category
-                    self.Categories.reloadData()
-                    
-                    if let sectionIndex = groupedChannels.firstIndex(where: { $0.category == selectedCategory }) {
-                        // Get the layout attributes for the header of this section
-                        DispatchQueue.main.async {
-                            // Using async to ensure the layout is updated
-                            if let attributes = self.AllTVsCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
-                                ofKind: UICollectionView.elementKindSectionHeader,
-                                at: IndexPath(item: 0, section: sectionIndex)) {
-                                
-                                // Get the frame of the header
-                                let headerRect = attributes.frame
-                                
-                                // Scroll to position the header at the top
-                                self.AllTVsCollectionView.setContentOffset(CGPoint(x: 0, y: headerRect.origin.y), animated: true)
-                            } else {
-                                // Fallback: if can't get header attributes, try to scroll to the first item
-                                if self.groupedChannels[sectionIndex].channels.count > 0 {
-                                    let indexPath = IndexPath(item: 0, section: sectionIndex)
-                                    self.AllTVsCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
-                                }
-                            }
+            guard indexPath.item < groupedChannels.count else {
+                return
+            }
+            
+            self.selectedCategory = groupedChannels[indexPath.item].category
+            self.Categories.reloadData()
+            
+            if let sectionIndex = groupedChannels.firstIndex(where: { $0.category == selectedCategory }) {
+                // Get the layout attributes for the header of this section
+                DispatchQueue.main.async {
+                    // Using async to ensure the layout is updated
+                    if let attributes = self.AllTVsCollectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+                        ofKind: UICollectionView.elementKindSectionHeader,
+                        at: IndexPath(item: 0, section: sectionIndex)) {
+                        
+                        // Get the frame of the header
+                        let headerRect = attributes.frame
+                        
+                        // Scroll to position the header at the top
+                        self.AllTVsCollectionView.setContentOffset(CGPoint(x: 0, y: headerRect.origin.y), animated: true)
+                    } else {
+                        // Fallback: if can't get header attributes, try to scroll to the first item
+                        if self.groupedChannels[sectionIndex].channels.count > 0 {
+                            let indexPath = IndexPath(item: 0, section: sectionIndex)
+                            self.AllTVsCollectionView.scrollToItem(at: indexPath, at: .top, animated: true)
                         }
                     }
                 }
+            }
+        }
     }
 }

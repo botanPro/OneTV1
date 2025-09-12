@@ -80,17 +80,17 @@ class SearchMovie: UIViewController ,UITextFieldDelegate,InternetStatusIndicable
 }
 
 extension SearchMovie : UITableViewDelegate , UITableViewDataSource{
-
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if Array.count == 0{
             
             return 0
         }
-
+        
         return Array.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! WishlistTableViewCell
         cell.Delete.isHidden = true
@@ -121,74 +121,43 @@ extension SearchMovie : UITableViewDelegate , UITableViewDataSource{
             self.view.addSubview(loadingIndicator)
         }
         
-            if UserDefaults.standard.string(forKey: "login") == "true"{
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                LoginAPi.getUserInfo { info in
-                    if info.planId == 0{
-                        DispatchQueue.main.async {
-                            if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                loadingIndicator.removeFromSuperview()
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                myVC.modalPresentationStyle = .overFullScreen
-                                self.present(myVC, animated: true)
-                            }
-                        }
-                        
-                    }else{
-                        HomeAPI.GetPaidItemById(i_id: self.Array[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                            if Astatus == "success"{
-                                if remark == "episode_video"{
-                                    myVC.is_series = true
-                                    myVC.EpisodesArray = episodes
-                                }else{
-                                    myVC.is_series = false
-                                }
-                                myVC.RecommendedArray = related
-                                myVC.Series = items
-                                myVC.title = self.Array[indexPath.row].title
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                                
-                                
-                            }
-                        }
-                    }
-                }
-            }else{
-                DispatchQueue.main.async { 
-                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                        loadingIndicator.removeFromSuperview()
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                        myVC.modalPresentationStyle = .fullScreen
-                        self.present(myVC, animated: true)
-                    }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+        
+        HomeAPI.GetFreeItemById(i_id: self.Array[indexPath.row].id) { [weak self] items, remark, episodes, related in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                    loadingIndicator.removeFromSuperview()
                 }
                 
+                myVC.is_series = (remark == "episode_video")
+                myVC.EpisodesArray = episodes
+                myVC.RecommendedArray = related
+                myVC.Series = items
+                myVC.title = self.Array[indexPath.row].title
+                
+                myVC.modalPresentationStyle = .overFullScreen
+                self.present(myVC, animated: true)
             }
+            
+        }
+        
+        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            return 240
+        }
+        
+        func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
+            let verticalPadding: CGFloat = 8
+            
+            let maskLayer = CALayer()
+            maskLayer.cornerRadius = 0
+            maskLayer.backgroundColor = UIColor.white.cgColor
+            maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding/2)
+            cell.layer.mask = maskLayer
+        }
         
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 240
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
-        let verticalPadding: CGFloat = 8
-
-        let maskLayer = CALayer()
-        maskLayer.cornerRadius = 0
-        maskLayer.backgroundColor = UIColor.white.cgColor
-        maskLayer.frame = CGRect(x: cell.bounds.origin.x, y: cell.bounds.origin.y, width: cell.bounds.width, height: cell.bounds.height).insetBy(dx: 0, dy: verticalPadding/2)
-        cell.layer.mask = maskLayer
-    }
-
 }
-

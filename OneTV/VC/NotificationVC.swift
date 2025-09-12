@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import EmptyDataSet_Swift
 class NotificationVC: UIViewController {
 
     
@@ -37,13 +37,18 @@ class NotificationVC: UIViewController {
 }
 
 
-
-
 extension NotificationVC : UITableViewDelegate , UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if NotificationArray.count == 0{
- 
+            self.tableView.emptyDataSetView { view in
+                let originalImage = UIImage(named: "Enable Push Notifications@4x")
+         
+                let scaledImage = originalImage?.resizedImage(newHeight: 200)
+                view.titleLabelString(NSAttributedString.init(string: "", attributes: [NSAttributedString.Key.font : UIFont.init(name: "HelveticaNeue-Bold", size: 18)!, NSAttributedString.Key.foregroundColor : UIColor.black]))
+                    .detailLabelString(NSAttributedString.init(string: "", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14,weight: .regular), NSAttributedString.Key.foregroundColor : UIColor.gray]))
+                    .image(scaledImage)
+            }
             return 0
         }
         return NotificationArray.count
@@ -58,7 +63,6 @@ extension NotificationVC : UITableViewDelegate , UITableViewDataSource{
         }
         return cell
     }
-    
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){

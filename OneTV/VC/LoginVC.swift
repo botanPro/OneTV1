@@ -18,6 +18,9 @@ import RSLoadingView
 import PSMeter
 import EFInternetIndicator
 import Drops
+import Alamofire
+
+
 
 class LoginVC: UIViewController , UITextFieldDelegate, UITextViewDelegate, InternetStatusIndicable{
     var internetConnectionIndicator: EFInternetIndicator.InternetViewIndicator?
@@ -27,20 +30,70 @@ class LoginVC: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
     @IBOutlet weak var Phone: PhoneNumberTextField!
     
     
-    
+    func getActiveOption(completion :@escaping (_ status: Int)->()){
+        let stringUrl = URL(string: "https://one-tv.net/api/active");
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(openCartApi.token)"
+        ]
+
+        
+        AF.request(stringUrl!, method: .get, headers: headers).responseData { response in
+            switch response.result
+            {
+            case .success:
+                let jsonData = JSON(response.data ?? "")
+                print(jsonData)
+                let data = jsonData.arrayValue
+                for act in data{
+                    print(act["is_active"].intValue)
+                    completion(act["is_active"].intValue)
+                }
+                
+            case .failure(let error):
+                print(error);
+            }
+        }
+    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if XLanguage.get() == .English{
+            self.Code.placeholder = "Password"
+        } else if XLanguage.get() == .Arabic{
+            self.Code.placeholder = "كلمة المرور"
+        } else {
+            self.Code.placeholder = "وشەی نهێنی"
+        }
         
+        self.getActiveOption { active in
+            if active == 1{
+                if XLanguage.get() == .English{
+                    self.Code.placeholder = "Password"
+                } else if XLanguage.get() == .Arabic{
+                    self.Code.placeholder = "كلمة المرور"
+                } else {
+                    self.Code.placeholder = "وشەی نهێنی"
+                }
+            }else{
+                if XLanguage.get() == .English{
+                    self.Code.placeholder = "Activation Code"
+                } else if XLanguage.get() == .Arabic{
+                    self.Code.placeholder = "رمز التفعيل"
+                } else {
+                    self.Code.placeholder = "کۆدی چالاککردن"
+                }
+            }
+        }
         
         self.Phone.placeHolderColor = .lightGray
         self.Phone.keyboardType = .asciiCapable
-        self.Phone.withPrefix = false
+        self.Phone.withPrefix = true
         self.Phone.withFlag = true
         self.Phone.withExamplePlaceholder = false
         self.Phone.placeholder = "750 123 45 67"
-        
+        self.Phone.withDefaultPickerUI = true
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -160,9 +213,11 @@ class LoginVC: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
                         self.phone = self.Phone.text!
                     }
                 }
+
                 self.phone = self.Phone.text!.convertedDigitsToLocale(Locale(identifier: "EN")).replace(string: " ", replacement: "");
-                
-                LoginAPi.Login(mobile: self.phone, code: self.Code.text!) { status, user in
+                //get device id
+                let deviceId = UIDevice.current.identifierForVendor?.uuidString
+                LoginAPi.Login(mobile: self.phone, code: self.Code.text!, deviceId: deviceId ?? "") { status, user in
                     self.alert.dismiss(animated: true, completion: {
                         if status == "success"{
                             UserDefaults.standard.setValue("true", forKey: "login")
@@ -237,3 +292,15 @@ class LoginVC: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
     }
     
 }
+
+
+
+class MyGBTextField: PhoneNumberTextField {
+    override var defaultRegion: String {
+        get {
+            return "UA"
+        }
+        set {}
+    }
+}
+

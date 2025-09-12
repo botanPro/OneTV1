@@ -26,7 +26,6 @@ import Drops
 class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
 
     
-    
     var internetConnectionIndicator: EFInternetIndicator.InternetViewIndicator?
     
     
@@ -36,8 +35,6 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         guard currentTime - lastTapTime > 0.8 else { return } // 0.5s delay
         lastTapTime = currentTime
         
-        
-        
         DispatchQueue.main.async {
             let loadingIndicator = UIActivityIndicatorView(style: .large)
             loadingIndicator.center = self.view.center
@@ -46,92 +43,26 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
             self.view.addSubview(loadingIndicator)
         }
         
-        
-        
         if CheckInternet.Connection(){
-            if is_paid == 1{
-                if UserDefaults.standard.string(forKey: "login") == "true"{
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                    LoginAPi.getUserInfo { info in
-                        if info.planId == 0{
-                            DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                    loadingIndicator.removeFromSuperview()
-                                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                    let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                    myVC.modalPresentationStyle = .overFullScreen
-                                    self.present(myVC, animated: true)
-                                }
-                            }
-                            
-                        }else{
-                            HomeAPI.GetPaidItemById(i_id: id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                                if Astatus == "success"{
-                                    if remark == "episode_video"{
-                                        myVC.is_series = true
-                                        myVC.EpisodesArray = episodes
-                                    }else{
-                                        myVC.is_series = false
-                                    }
-                                    
-                                    myVC.RecommendedArray = related
-                                    myVC.Series = items
-                                    myVC.title = items.title
-                                    DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                            loadingIndicator.removeFromSuperview()
-                                            self.navigationController?.pushViewController(myVC, animated: true)
-                                        }
-                                    }
-                                    
-                                }else{
-                                    DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                            loadingIndicator.removeFromSuperview()
-                                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                            let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                            myVC.modalPresentationStyle = .overFullScreen
-                                            self.present(myVC, animated: true)
-                                        }
-                                    }
-                                    
-                                }
-                            }
-                        }
-                    }
-                }else{
-                    DispatchQueue.main.async { // Ensure UI updates are on main thread
-                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                            loadingIndicator.removeFromSuperview()
-                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                            myVC.modalPresentationStyle = .fullScreen
-                            self.present(myVC, animated: true)
-                        }
+            
+            HomeAPI.GetFreeItemById(i_id: id) { [weak self] items, remark, episodes, related in
+                guard let self = self else { return }
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+                DispatchQueue.main.async {
+                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                        loadingIndicator.removeFromSuperview()
                     }
                     
-                }
-            }else{
-                HomeAPI.GetFreeItemById(i_id: id) { [weak self] items, remark, episodes, related in
-                    guard let self = self else { return }
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                    DispatchQueue.main.async {
-                        if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                            loadingIndicator.removeFromSuperview()
-                        }
-                        
-                        myVC.is_series = (remark == "episode_video")
-                        myVC.EpisodesArray = episodes
-                        myVC.RecommendedArray = related
-                        myVC.Series = items
-                        myVC.title = items.title
-                        
-                        myVC.modalPresentationStyle = .overFullScreen
-                        self.present(myVC, animated: true)
-                        
-                    }
+                    myVC.is_series = (remark == "episode_video")
+                    myVC.EpisodesArray = episodes
+                    myVC.RecommendedArray = related
+                    myVC.Series = items
+                    myVC.title = items.title
+                    
+                    myVC.modalPresentationStyle = .overFullScreen
+                    self.present(myVC, animated: true)
+                    
                 }
             }
             
@@ -247,7 +178,7 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
     var MostArray: [Item] = []
     var FreeArray: [Item] = []
     var NewsrArray: [Item] = []
-    var ReklamArray: [Item] = []
+    var ReklamArray: [RiklamObject] = []
     
     
     @IBOutlet weak var OneTitile: UIBarButtonItem!
@@ -260,7 +191,6 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
     var sliderImages : [Slider] = []
     
     @IBOutlet weak var SubScribeView: UIView!
-    
     
     
     @IBAction func Favorites(_ sender: Any) {
@@ -291,21 +221,37 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
     }
     
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(GetSildesChangeLangs), name: NSNotification.Name(rawValue: "LanguageChanged"), object: nil)
     }
     
+
+    
+    @IBOutlet weak var TVsItem: UIBarButtonItem!
+    
+    @IBOutlet weak var SliderHeight: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        self.TVsStack.isHidden = true
+        //removeTVsItem()
+        
+        
+        
+        if isPad {
+            self.SliderHeight.constant = 1100
+        } else {
+            self.SliderHeight.constant = 640
+        }
+        
+        
         
         GetSildes()
         GetTVs()
-        getFree()
         getHomeDashboard()
         PageController.radius = 0
         PageController.tintColor = #colorLiteral(red: 0.02222905494, green: 0.4373427629, blue: 0.4898250103, alpha: 1)
@@ -318,7 +264,6 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         ScrollView.cr.addHeadRefresh(animator: FastAnimator(), handler: { [self] in
             GetSildes()
             GetTVs()
-            getFree()
             getHomeDashboard()
         })
         
@@ -338,6 +283,19 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         ReklamCollection.register(UINib(nibName: "ReklamCollectionCell", bundle: nil), forCellWithReuseIdentifier: "cell")
         
         SliderCollection.register(UINib(nibName: "SliderCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        
+        
+        if UserDefaults.standard.string(forKey: "login") == "true" {
+        
+            Messaging.messaging().token { token, error in
+                if let error = error {
+                    print("Error fetching FCM registration token: \(error)")
+                } else if let token = token {
+                    print("FCM registration token: \(token)")
+                    UpdateOneSignalIdAPI.Update(UUID: token)
+                }
+            }
+        }
         
     }
     
@@ -366,46 +324,24 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         SlidesObjectAPI.GetSlideImage { slides in
             self.sliderImages = slides.data.sliders
             
-            for (i, slide) in self.sliderImages.enumerated(){
-                if slide.item.itemType == 1{
-                    if XLanguage.get() == .English{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "Free movie for you"
-                        }else{
-                            self.sliderImages[i].lable = "Available with subscription"
-                        }
-                    }else if XLanguage.get() == .Arabic{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "فيلم مجاني لك"
-                        }else{
-                            self.sliderImages[i].lable = "متوفر مع الاشتراك"
-                        }
-                    }else{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "فیلمی بێ بەرامبەر بۆ تو"
-                        }else{
-                            self.sliderImages[i].lable = "لەگەڵ بەشداریکردن بەردەستە"
-                        }
+            for (i, slide) in self.sliderImages.enumerated() {
+                if slide.item.itemType == 1 {
+                    // Movie
+                    if XLanguage.get() == .English {
+                        self.sliderImages[i].lable = "Featured Movie"
+                    } else if XLanguage.get() == .Arabic {
+                        self.sliderImages[i].lable = "فيلم مميز"
+                    } else {
+                        self.sliderImages[i].lable = "فلمە تایبەتیەکە"
                     }
-                }else{
-                    if XLanguage.get() == .English{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "Free series for you"
-                        }else{
-                            self.sliderImages[i].lable = "Available with subscription"
-                        }
-                    }else if XLanguage.get() == .Arabic{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "مسلسل مجاني لك"
-                        }else{
-                            self.sliderImages[i].lable = "متوفر مع الاشتراك"
-                        }
-                    }else{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "زنجیرەی بێ بەرامبەر بۆ تو"
-                        }else{
-                            self.sliderImages[i].lable = "لەگەڵ بەشداریکردن بەردەستە"
-                        }
+                } else {
+                    // Series
+                    if XLanguage.get() == .English {
+                        self.sliderImages[i].lable = "Top Series"
+                    } else if XLanguage.get() == .Arabic {
+                        self.sliderImages[i].lable = "أفضل مسلسل"
+                    } else {
+                        self.sliderImages[i].lable = "باشترین زنجیرە"
                     }
                 }
             }
@@ -420,46 +356,24 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         SlidesObjectAPI.GetSlideImage { slides in
             self.sliderImages = slides.data.sliders
             
-            for (i, slide) in self.sliderImages.enumerated(){
-                if slide.item.itemType == 1{
-                    if XLanguage.get() == .English{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "Free movie for you"
-                        }else{
-                            self.sliderImages[i].lable = "Available with subscription"
-                        }
-                    }else if XLanguage.get() == .Arabic{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "فيلم مجاني لك"
-                        }else{
-                            self.sliderImages[i].lable = "متوفر مع الاشتراك"
-                        }
-                    }else{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "فیلمی بێ بەرامبەر بۆ تو"
-                        }else{
-                            self.sliderImages[i].lable = "لەگەڵ بەشداریکردن بەردەستە"
-                        }
+            for (i, slide) in self.sliderImages.enumerated() {
+                if slide.item.itemType == 1 {
+                    // Movie
+                    if XLanguage.get() == .English {
+                        self.sliderImages[i].lable = "Featured Movie"
+                    } else if XLanguage.get() == .Arabic {
+                        self.sliderImages[i].lable = "فيلم مميز"
+                    } else {
+                        self.sliderImages[i].lable = "فلمە تایبەتیەکە"
                     }
-                }else{
-                    if XLanguage.get() == .English{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "Free series for you"
-                        }else{
-                            self.sliderImages[i].lable = "Available with subscription"
-                        }
-                    }else if XLanguage.get() == .Arabic{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "مسلسل مجاني لك"
-                        }else{
-                            self.sliderImages[i].lable = "متوفر مع الاشتراك"
-                        }
-                    }else{
-                        if slide.item.isPaid == 0{
-                            self.sliderImages[i].lable = "زنجیرەی بێ بەرامبەر بۆ تو"
-                        }else{
-                            self.sliderImages[i].lable = "لەگەڵ بەشداریکردن بەردەستە"
-                        }
+                } else {
+                    // Series
+                    if XLanguage.get() == .English {
+                        self.sliderImages[i].lable = "Top Series"
+                    } else if XLanguage.get() == .Arabic {
+                        self.sliderImages[i].lable = "أفضل مسلسل"
+                    } else {
+                        self.sliderImages[i].lable = "باشترین زنجیرە"
                     }
                 }
             }
@@ -470,44 +384,108 @@ class Home: UIViewController, WatchTappedDelegate ,InternetStatusIndicable{
         }
     }
     
+    @IBOutlet weak var TVsStack: UIStackView!
     
-    func GetTVs(){
-        self.self.LiveArray.removeAll()
-        GetHomeTVAPI.GetHomeTV(completion:  { tvs, chanels in
-            for channel in chanels{
+    func GetTVs() {
+        self.LiveArray.removeAll()
+        
+        GetHomeTVAPI.GetHomeTV(completion: { tvs, chanels in
+            for channel in chanels {
                 self.LiveArray.append(contentsOf: channel.channels)
             }
             self.ScrollView.cr.endHeaderRefresh()
-            self.LiveTVCollection.reloadData()
+            if self.LiveArray.count == 0 {
+                self.TVsStack.isHidden = true
+                self.removeTVsItem()
+            } else {
+                self.TVsStack.isHidden = false
+                self.addTVsItem()
+                self.LiveTVCollection.reloadData()
+            }
+            
         })
     }
     
     
-    func getFree(){
-        //        if CheckInternet.Connection(){
-        //            HomeAPI.GetHomeFree { free in
-        //                self.FreeArray = free
-        //                self.ScrollView.cr.endHeaderRefresh()
-        //                self.FreeCollection.reloadData()
-        //            }
-        //        }
-    }
     
+    func removeTVsItem() {
+        guard let item = TVsItem else { return } // Safely unwrap
+        guard var rightItems = navigationItem.rightBarButtonItems else { return }
+
+        if let index = rightItems.firstIndex(of: item) {
+            rightItems.remove(at: index)
+            navigationItem.rightBarButtonItems = rightItems
+        }
+    }
+
+    func addTVsItem() {
+        guard let item = TVsItem else { return }
+
+        if var rightItems = navigationItem.rightBarButtonItems {
+            if !rightItems.contains(item) {
+                rightItems.append(item)
+                navigationItem.rightBarButtonItems = rightItems
+            }
+        } else {
+            navigationItem.rightBarButtonItems = [item]
+        }
+    }
+
+    @IBOutlet weak var FreeStack: UIStackView!
+    @IBOutlet weak var NewstStack: UIStackView!
+    @IBOutlet weak var ViewdStack: UIStackView!
+    @IBOutlet weak var ReviewdStack: UIStackView!
+    
+
     
     func getHomeDashboard(){
+        self.FreeStack.isHidden = true
+        self.NewstStack.isHidden = true
+        self.ViewdStack.isHidden = true
+        self.ReviewdStack.isHidden = true
         if CheckInternet.Connection(){
             HomeAPI.GetHome { trailer, most, newest, featured, reviewd in
-                self.FreeArray = trailer
-                self.MostArray = most
-                self.NewsrArray = newest
                 self.ReklamArray = featured
-                self.ReviewdArray = reviewd
-                self.ScrollView.cr.endHeaderRefresh()
-                self.MostCollection.reloadData()
-                self.FreeCollection.reloadData()
-                self.NewstCollection.reloadData()
                 self.ReklamCollection.reloadData()
-                self.ReviewdCollection.reloadData()
+                
+                
+                if trailer.count == 0{
+                    self.FreeStack.isHidden = true
+                }else{
+                    self.FreeStack.isHidden = false
+                    self.FreeArray = trailer
+                    self.FreeCollection.reloadData()
+                }
+                
+                
+                if newest.count == 0{
+                    self.NewstStack.isHidden = true
+                }else{
+                    self.NewstStack.isHidden = false
+                    self.NewsrArray = newest
+                    self.NewstCollection.reloadData()
+                }
+                
+                
+                if most.count == 0{
+                    self.ViewdStack.isHidden = true
+                }else{
+                    self.ViewdStack.isHidden = false
+                    self.MostArray = most
+                    self.MostCollection.reloadData()
+                }
+                
+                
+                if reviewd.count == 0{
+                    self.ReviewdStack.isHidden = true
+                }else{
+                    self.ReviewdStack.isHidden = false
+                    self.ReviewdArray = reviewd
+                    self.ReviewdCollection.reloadData()
+                }
+               
+                self.ScrollView.cr.endHeaderRefresh()
+               
             }
         }
     }
@@ -652,10 +630,9 @@ extension Home : UICollectionViewDelegate , UICollectionViewDataSource , UIColle
         
         if collectionView == self.ReklamCollection{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ReklamCollectionCell
-            let urlString = self.ReklamArray[indexPath.row].image.landscape
-            let url = URL(string: "https://one-tv.net/assets/images/item/landscape/\(urlString)")
+            let urlString = self.ReklamArray[indexPath.row].image
+            let url = URL(string: "https://one-tv.net/assets/images/ads/\(urlString)")
             cell.Imagee?.sd_setImage(with: url, completed: nil)
-            
             return cell
         }
         
@@ -683,16 +660,20 @@ extension Home : UICollectionViewDelegate , UICollectionViewDataSource , UIColle
     }
     
     
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == self.LiveTVCollection{
             return CGSize(width: 100, height: 100)
         }
         
         if collectionView == self.SliderCollection{
-            return CGSize(width: collectionView.frame.width, height: 640)
+            let isPad = UIDevice.current.userInterfaceIdiom == .pad
+            
+            if isPad {
+                return CGSize(width: collectionView.frame.width, height: 1100)
+            } else {
+                return CGSize(width: collectionView.frame.width, height: 640)
+            }
+            
         }
         
         if collectionView == self.FreeCollection{
@@ -857,200 +838,107 @@ extension Home : UICollectionViewDelegate , UICollectionViewDataSource , UIColle
             }
         }
         
-        
+
         
         if collectionView == self.NewstCollection{
-            if UserDefaults.standard.string(forKey: "login") == "true"{
-                DispatchQueue.main.async {
-                    let loadingIndicator = UIActivityIndicatorView(style: .large)
-                    loadingIndicator.center = self.view.center
-                    loadingIndicator.startAnimating()
-                    loadingIndicator.tag = 999 // For easy reference
-                    self.view.addSubview(loadingIndicator)
-                }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                LoginAPi.getUserInfo { info in
-                    if info.planId == 0{
-                        DispatchQueue.main.async {
-                            if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                loadingIndicator.removeFromSuperview()
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                myVC.modalPresentationStyle = .overFullScreen
-                                self.present(myVC, animated: true)
-                            }
-                        }
-                        
-                    }else{
-                        HomeAPI.GetPaidItemById(i_id: self.NewsrArray[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                            if Astatus == "success"{
-                                if remark == "episode_video"{
-                                    myVC.is_series = true
-                                    myVC.EpisodesArray = episodes
-                                }else{
-                                    myVC.is_series = false
-                                }
-                                myVC.RecommendedArray = related
-                                myVC.Series = items
-                                myVC.title = self.NewsrArray[indexPath.row].title
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }else{
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                myVC.modalPresentationStyle = .fullScreen
-                self.present(myVC, animated: true)
-                
+            DispatchQueue.main.async {
+                let loadingIndicator = UIActivityIndicatorView(style: .large)
+                loadingIndicator.center = self.view.center
+                loadingIndicator.startAnimating()
+                loadingIndicator.tag = 999
+                self.view.addSubview(loadingIndicator)
             }
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
             
+            HomeAPI.GetFreeItemById(i_id: self.NewsrArray[indexPath.row].id) { [weak self] items, remark, episodes, related in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                        loadingIndicator.removeFromSuperview()
+                    }
+
+                    myVC.is_series = (remark == "episode_video")
+                    myVC.EpisodesArray = episodes
+                    myVC.RecommendedArray = related
+                    myVC.Series = items
+                    myVC.title = self.NewsrArray[indexPath.row].title
+                    
+                    myVC.modalPresentationStyle = .overFullScreen
+                    self.present(myVC, animated: true)
+                }
+            }
         }
         
         
         if collectionView == self.MostCollection{
-            if UserDefaults.standard.string(forKey: "login") == "true"{
-                DispatchQueue.main.async {
-                    let loadingIndicator = UIActivityIndicatorView(style: .large)
-                    loadingIndicator.center = self.view.center
-                    loadingIndicator.startAnimating()
-                    loadingIndicator.tag = 999 // For easy reference
-                    self.view.addSubview(loadingIndicator)
-                }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                LoginAPi.getUserInfo { info in
-                    if info.planId == 0{
-                        DispatchQueue.main.async { // Ensure UI updates are on main thread
-                            if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                loadingIndicator.removeFromSuperview()
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                myVC.modalPresentationStyle = .overFullScreen
-                                self.present(myVC, animated: true)
-                            }
-                        }
-                        
-                    }else{
-                        HomeAPI.GetPaidItemById(i_id: self.MostArray[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                            if Astatus == "success"{
-                                if remark == "episode_video"{
-                                    myVC.is_series = true
-                                    myVC.EpisodesArray = episodes
-                                }else{
-                                    myVC.is_series = false
-                                }
-                                
-                                myVC.RecommendedArray = related
-                                myVC.Series = items
-                                myVC.title = self.MostArray[indexPath.row].title
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                                
-                            }else{
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                        let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                                
-                            }
-                        }
-                    }
-                }
-            }else{
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                myVC.modalPresentationStyle = .fullScreen
-                self.present(myVC, animated: true)
+            DispatchQueue.main.async {
+                let loadingIndicator = UIActivityIndicatorView(style: .large)
+                loadingIndicator.center = self.view.center
+                loadingIndicator.startAnimating()
+                loadingIndicator.tag = 999
+                self.view.addSubview(loadingIndicator)
+            }
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+            
+            HomeAPI.GetFreeItemById(i_id: self.MostArray[indexPath.row].id) { [weak self] items, remark, episodes, related in
+                guard let self = self else { return }
                 
+                DispatchQueue.main.async {
+                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                        loadingIndicator.removeFromSuperview()
+                    }
+
+                    myVC.is_series = (remark == "episode_video")
+                    myVC.EpisodesArray = episodes
+                    myVC.RecommendedArray = related
+                    myVC.Series = items
+                    myVC.title = self.MostArray[indexPath.row].title
+                    
+                    myVC.modalPresentationStyle = .overFullScreen
+                    self.present(myVC, animated: true)
+                }
             }
             
         }
         
+        if collectionView == self.ReklamCollection{
+            if let urlDestination = URL.init(string: self.ReklamArray[indexPath.row].url) {
+                UIApplication.shared.open(urlDestination)
+            }
+        }
         
         if collectionView == self.ReviewdCollection{
-            if UserDefaults.standard.string(forKey: "login") == "true"{
-                DispatchQueue.main.async {
-                    let loadingIndicator = UIActivityIndicatorView(style: .large)
-                    loadingIndicator.center = self.view.center
-                    loadingIndicator.startAnimating()
-                    loadingIndicator.tag = 999 // For easy reference
-                    self.view.addSubview(loadingIndicator)
-                }
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
-                LoginAPi.getUserInfo { info in
-                    if info.planId == 0{
-                        DispatchQueue.main.async { // Ensure UI updates are on main thread
-                            if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                loadingIndicator.removeFromSuperview()
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                myVC.modalPresentationStyle = .overFullScreen
-                                self.present(myVC, animated: true)
-                            }
-                        }
-                        
-                    }else{
-                        HomeAPI.GetPaidItemById(i_id: self.ReviewdArray[indexPath.row].id, episode_id: 0) { items, remark, episodes, related, Astatus in
-                            if Astatus == "success"{
-                                if remark == "episode_video"{
-                                    myVC.is_series = true
-                                    myVC.EpisodesArray = episodes
-                                }else{
-                                    myVC.is_series = false
-                                }
-                                
-                                myVC.RecommendedArray = related
-                                myVC.Series = items
-                                myVC.title = self.ReviewdArray[indexPath.row].title
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                                
-                            }else{
-                                DispatchQueue.main.async { // Ensure UI updates are on main thread
-                                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
-                                        loadingIndicator.removeFromSuperview()
-                                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                        let myVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-                                        myVC.modalPresentationStyle = .overFullScreen
-                                        self.present(myVC, animated: true)
-                                    }
-                                }
-                                
-                            }
-                        }
-                    }
-                }
-            }else{
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
-                myVC.modalPresentationStyle = .fullScreen
-                self.present(myVC, animated: true)
+            
+            DispatchQueue.main.async {
+                let loadingIndicator = UIActivityIndicatorView(style: .large)
+                loadingIndicator.center = self.view.center
+                loadingIndicator.startAnimating()
+                loadingIndicator.tag = 999
+                self.view.addSubview(loadingIndicator)
+            }
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+            
+            HomeAPI.GetFreeItemById(i_id: self.ReviewdArray[indexPath.row].id) { [weak self] items, remark, episodes, related in
+                guard let self = self else { return }
                 
+                DispatchQueue.main.async {
+                    if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                        loadingIndicator.removeFromSuperview()
+                    }
+
+                    myVC.is_series = (remark == "episode_video")
+                    myVC.EpisodesArray = episodes
+                    myVC.RecommendedArray = related
+                    myVC.Series = items
+                    myVC.title = self.ReviewdArray[indexPath.row].title
+                    
+                    myVC.modalPresentationStyle = .overFullScreen
+                    self.present(myVC, animated: true)
+                }
             }
             
         }

@@ -5,7 +5,8 @@ import AVFoundation
 import AVKit
 import Drops
 import MediaPlayer
-class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLoaderDelegate {
+class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLoaderDelegate{
+    
     
     // MARK: - Properties
     var internetConnectionIndicator: InternetViewIndicator?
@@ -66,10 +67,25 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
     }
     
     
+    @IBOutlet weak var ShadowHeiht: NSLayoutConstraint!
+    @IBOutlet weak var ImageHeight: NSLayoutConstraint!
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        
+        if isPad {
+            self.ImageHeight.constant = 1100
+            self.ShadowHeiht.constant = 390
+        } else {
+            self.ImageHeight.constant = 640
+            self.ShadowHeiht.constant = 211
+        }
+        
+        
         setupUI()
         setupObservers()
         loadInitialData()
@@ -289,6 +305,20 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         )
     }
     
+    func formatBudget(_ budget: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        
+        if let budgetValue = Double(budget) {
+            let formattedBudget = formatter.string(from: NSNumber(value: budgetValue))
+            return formattedBudget ?? budget
+        }
+        
+        return budget
+    }
+
+    var is_paid = 0
     private func loadInitialData() {
         EpisodeStack.isHidden = !is_series
         if XLanguage.get() == .English{
@@ -302,7 +332,6 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             Watchlable.text = is_series ? "ئەڵقەی یەکەم ببینە" : "سەیری فیلم بکە"
         }
             
-       
         
         if !EpisodesArray.isEmpty {
             episodeID = EpisodesArray[0].id
@@ -318,12 +347,16 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             }
         }
         
+        
         //Watchlable.text = is_trailer ? "Watch Trailer" : Watchlable.text
         
         guard let series = Series else { return }
-        
+        self.is_paid = series.isPaid
         itemID = series.id
         Name.text = series.title
+        self.Awards.text = series.awards
+        self.Budget.text = formatBudget(series.budget)
+        self.Revenue.text = formatBudget(series.revenue)
         Rate.text = "\(series.ratings)"
         Views.text = formatViews(series.view)
         year.text = "Languages | \(series.team.language) • \(series.team.genres)"
@@ -336,7 +369,11 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             self.Director.text = "بەڕێوەبەر:\(series.team.director),\n\(series.team.casts)"
         }
         Desc.text = series.description
-        
+        if series.team.director == "-"{
+            self.TeamB.isHidden = true
+        }else{
+            self.TeamB.isHidden = false
+        }
         let urlString = series.image.portrait
         let url = URL(string: "https://one-tv.net/assets/images/item/portrait/\(urlString)")
         Imagee.sd_setImage(with: url)
@@ -381,58 +418,153 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         }
     }
     
+    private func fetchDirectVideoURL(from embedURL: URL, completion: @escaping (URL?) -> Void) {
+        URLSession.shared.dataTask(with: embedURL) { data, response, error in
+            guard let data = data, let html = String(data: data, encoding: .utf8) else {
+                completion(nil)
+                return
+            }
+
+            // Look for .mp4 or .m3u8 in the page source
+            if let range = html.range(of: #"https?:\/\/[^\s'"]+\.(mp4|m3u8)"#, options: .regularExpression) {
+                let urlString = String(html[range]).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+                print(urlString)
+                completion(URL(string: urlString))
+            } else {
+                completion(nil)
+            }
+        }.resume()
+    }
+    
+    
     // MARK: - Video Playback
     @IBAction func Watch(_ sender: Any) {
-        let currentTime = Date().timeIntervalSince1970
-        guard currentTime - lastTapTime > 0.8 else { return }
-        lastTapTime = currentTime
-        
-        guard CheckInternet.Connection() else {
-            showNoInternetAlert()
-            return
-        }
-        
-        checkScreenRecordingStatus()
-        
-        guard !isScreenRecording else {
-            showScreenRecordingAlert()
-            return
-        }
-        
-        showLoadingIndicator()
-        
-        print(self.itemID)
-        print(episodeID)
-        
-        
-        HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
-            guard let self = self else { return }
+        if self.is_paid == 0{
+            let currentTime = Date().timeIntervalSince1970
+            guard currentTime - lastTapTime > 0.8 else { return }
+            lastTapTime = currentTime
             
-            DispatchQueue.main.async {
-                self.loadingIndicator?.removeFromSuperview()
-                self.checkScreenRecordingStatus()
-                guard !self.isScreenRecording else {
-                    self.showScreenRecordingAlert()
-                    return
-                }
+            guard CheckInternet.Connection() else {
+                showNoInternetAlert()
+                return
+            }
+            
+            checkScreenRecordingStatus()
+            
+            guard !isScreenRecording else {
+                showScreenRecordingAlert()
+                return
+            }
+            
+            showLoadingIndicator()
+            
+            print(self.itemID)
+            print(episodeID)
+            
+            HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
+                guard let self = self else { return }
                 
-                guard status == "success" else {
-                    self.showErrorAlert(message: "Failed to load video")
-                    return
-                }
-                
-                self.videoQualities = videos.sorted { $0.size > $1.size }
-                
-                if self.videoQualities.count > 1 {
-                    self.showQualitySelection()
-                } else if let firstVideo = self.videoQualities.first, let url = URL(string: firstVideo.url) {
-                    self.playVideo(url: url)
-                } else {
-                    self.showErrorAlert(message: "No video available")
+                DispatchQueue.main.async {
+                    self.loadingIndicator?.removeFromSuperview()
+                    self.checkScreenRecordingStatus()
+                    guard !self.isScreenRecording else {
+                        self.showScreenRecordingAlert()
+                        return
+                    }
+                    
+                    self.videoQualities = videos.sorted { $0.size > $1.size }
+                    
+                    if self.videoQualities.count > 1 {
+                        self.showQualitySelection()
+                    } else if let firstVideo = self.videoQualities.first, let url = URL(string: firstVideo.url) {
+                        if url.pathExtension == "mp4" || url.pathExtension == "m3u8" {
+                                self.playVideo(url: url)
+                            } else {
+                                self.fetchDirectVideoURL(from: url) { directURL in
+                                    DispatchQueue.main.async {
+                                        if let directURL = directURL {
+                                            self.playVideo(url: directURL)
+                                        } else {
+                                            self.showErrorAlert(message: "Unable to extract video URL")
+                                        }
+                                    }
+                                }
+                            }
+                    } else {
+                        self.showErrorAlert(message: "No video available")
+                    }
                 }
             }
             
-            
+        }else{
+            showLoadingIndicator()
+            if UserDefaults.standard.string(forKey: "login") == "true"{
+                LoginAPi.getUserInfo { info in
+                    DispatchQueue.main.async { [self] in
+                        self.loadingIndicator?.removeFromSuperview()
+                        if info.planId == 0{
+                            self.showSubscriptionScreen()
+                        }else{
+                            guard CheckInternet.Connection() else {
+                                showNoInternetAlert()
+                                return
+                            }
+                            
+                            checkScreenRecordingStatus()
+                            
+                            guard !isScreenRecording else {
+                                showScreenRecordingAlert()
+                                return
+                            }
+                            
+                            showLoadingIndicator()
+                            
+                            print(self.itemID)
+                            print(episodeID)
+                            
+                            HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
+                                guard let self = self else { return }
+                                
+                                DispatchQueue.main.async {
+                                    self.loadingIndicator?.removeFromSuperview()
+                                    self.checkScreenRecordingStatus()
+                                    guard !self.isScreenRecording else {
+                                        self.showScreenRecordingAlert()
+                                        return
+                                    }
+                                    
+                                    self.videoQualities = videos.sorted { $0.size > $1.size }
+                                    
+                                    if self.videoQualities.count > 1 {
+                                        self.showQualitySelection()
+                                    } else if let firstVideo = self.videoQualities.first, let url = URL(string: firstVideo.url) {
+                                        if url.pathExtension == "mp4" || url.pathExtension == "m3u8" {
+                                                self.playVideo(url: url)
+                                            } else {
+                                                self.fetchDirectVideoURL(from: url) { directURL in
+                                                    DispatchQueue.main.async {
+                                                        if let directURL = directURL {
+                                                            self.playVideo(url: directURL)
+                                                        } else {
+                                                            self.showErrorAlert(message: "Unable to extract video URL")
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                    } else {
+                                        self.showErrorAlert(message: "No video available")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+                DispatchQueue.main.async {
+                    self.loadingIndicator?.removeFromSuperview()
+                    self.showSubscriptionScreen()
+                }
+            }
         }
     }
     
@@ -462,7 +594,19 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
                 handler: { [weak self] _ in
                     self?.selectedQualityIndex = index
                     if let url = URL(string: quality.url) {
-                        self?.playVideo(url: url)
+                        if url.pathExtension == "mp4" || url.pathExtension == "m3u8" {
+                            self?.playVideo(url: url)
+                            } else {
+                                self?.fetchDirectVideoURL(from: url) { directURL in
+                                    DispatchQueue.main.async {
+                                        if let directURL = directURL {
+                                            self?.playVideo(url: directURL)
+                                        } else {
+                                            self?.showErrorAlert(message: "Unable to extract video URL")
+                                        }
+                                    }
+                                }
+                            }
                     }
                 }
             ))
@@ -481,10 +625,34 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
     }
     
     private func setupPlayer(with url: URL) {
-        let asset = AVURLAsset(url: url)
-        asset.resourceLoader.setDelegate(self, queue: .main)
+        // If it's HLS (.m3u8), just use it directly
+        if url.pathExtension == "m3u8" {
+            let playerItem = AVPlayerItem(url: url)
+            player = AVPlayer(playerItem: playerItem)
+            currentPlayer = player
+        } else {
+            // Keep your old logic for mp4/others
+            let asset = AVURLAsset(url: url)
+            asset.resourceLoader.setDelegate(self, queue: .main)
+            let playerItem = AVPlayerItem(asset: asset)
+            player = AVPlayer(playerItem: playerItem)
+            currentPlayer = player
+        }
+
+        disableExternalPlayback()
+    }
+    
+    private func setupPlayerWithHeaders(url: URL) {
+        // Add the headers required by the streaming server
+        let headers = [
+            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
+            "Referer": "https://vidmoly.net/"
+        ]
         
+        // Build an AVURLAsset with custom headers
+        let asset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
         let playerItem = AVPlayerItem(asset: asset)
+        
         player = AVPlayer(playerItem: playerItem)
         currentPlayer = player
         
@@ -492,20 +660,33 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
     }
 
     private func playVideo(url: URL) {
-        
         guard !isScreenRecording else {
-                   showScreenRecordingAlert()
-                   return
-               }
+            showScreenRecordingAlert()
+            return
+        }
         
+        do {
+            try AVAudioSession.sharedInstance().setCategory(
+                .playback,
+                mode: .moviePlayback,
+                options: []
+            )
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set audio session category: \(error)")
+        }
         
         // Clean up previous player
         player?.pause()
         playerVC?.player = nil
         playerVC?.dismiss(animated: false)
         
-        // Setup new player with proper configuration
-        setupPlayer(with: url)
+        // Decide how to load the URL
+        if url.pathExtension == "m3u8" {
+            setupPlayerWithHeaders(url: url)   // HLS usually needs headers
+        } else {
+            setupPlayer(with: url)             // mp4 or other direct links
+        }
         
         // Configure and present player view controller
         setupPlayerViewController()
@@ -544,12 +725,56 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         
         present(playerVC, animated: true) { [weak self] in
             self?.player?.play()
+            //self?.addEpisodesButton()
+            // Make sure episode peeks after a short delay (allows player UI to settle)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                if let episodeContainerView = self?.episodeContainerView,
+                   let constraint = self?.episodeContainerBottomConstraint {
+                    UIView.animate(withDuration: 0.5) {
+                        constraint.constant = (self?.episodeContainerHeight ?? 180) - 40 // Show peek
+                        episodeContainerView.superview?.layoutIfNeeded()
+                    }
+                }
+            }
         }
+    }
+    
+    
+    private func addEpisodesButton() {
+        guard let overlayView = playerVC?.contentOverlayView else { return }
+        
+        let episodesButton = UIButton(type: .system)
+        var buttonTitle = "Episodes"
+        if XLanguage.get() == .Arabic {
+            buttonTitle = "الحلقات"
+        } else if XLanguage.get() == .Kurdish {
+            buttonTitle = "ئەڵقەکان"
+        }
+        
+        episodesButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
+        episodesButton.setTitle(buttonTitle, for: .normal)
+        episodesButton.tintColor = .white
+        episodesButton.backgroundColor = UIColor(red: 0.02, green: 0.44, blue: 0.49, alpha: 0.8)
+        episodesButton.layer.cornerRadius = 10
+        episodesButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
+        episodesButton.addTarget(self, action: #selector(episodesButtonTapped), for: .touchUpInside)
+        
+        episodesButton.translatesAutoresizingMaskIntoConstraints = false
+        overlayView.addSubview(episodesButton)
+        
+        NSLayoutConstraint.activate([
+            episodesButton.bottomAnchor.constraint(equalTo: overlayView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            episodesButton.trailingAnchor.constraint(equalTo: overlayView.trailingAnchor, constant: -20)
+        ])
+    }
+
+    @objc private func episodesButtonTapped() {
+        toggleEpisodePanel()
     }
     
     private var episodeContainerView: UIView?
     private var episodeCollectionView: UICollectionView?
-    private var episodeContainerHeight: CGFloat = 180
+    private var episodeContainerHeight: CGFloat = 300
     private var episodeContainerBottomConstraint: NSLayoutConstraint?
     private var lastPanPosition: CGFloat = 0
     private var isEpisodeViewVisible = false
@@ -565,10 +790,6 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             playerVC?.canStartPictureInPictureAutomaticallyFromInline = false
         }
         
-        // Check if series has episodes, only setup collection view if needed
-        if is_series && !EpisodesArray.isEmpty {
-            setupEpisodeCollectionInPlayer()
-        }
     }
     
     private func setupEpisodeCollectionInPlayer() {
@@ -577,11 +798,8 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         // Create container view for episodes
         episodeContainerView = UIView()
         guard let episodeContainerView = episodeContainerView else { return }
-        episodeContainerView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        episodeContainerView.backgroundColor = UIColor.clear
         episodeContainerView.translatesAutoresizingMaskIntoConstraints = false
-        episodeContainerView.clipsToBounds = true
-        episodeContainerView.layer.cornerRadius = 10
-        episodeContainerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         
         // Add drag handle
         let handleView = UIView()
@@ -592,11 +810,11 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         
         // Add episode title label
         let titleLabel = UILabel()
-        var titleText = "Episodes"
+        var titleText = ""
         if XLanguage.get() == .Arabic {
-            titleText = "الحلقات"
+            titleText = ""
         } else if XLanguage.get() == .Kurdish {
-            titleText = "ئەڵقەکان"
+            titleText = ""
         }
         titleLabel.text = titleText
         titleLabel.textColor = .white
@@ -621,6 +839,7 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         episodeCollectionView.register(EpisodePlayerCell.self, forCellWithReuseIdentifier: "EpisodePlayerCell")
         episodeCollectionView.delegate = self
         episodeCollectionView.dataSource = self
+        episodeCollectionView.allowsSelection = true
         
         episodeContainerView.addSubview(episodeCollectionView)
         
@@ -631,10 +850,10 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         // Add tap gesture to handle view
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         handleView.addGestureRecognizer(tapGesture)
+        handleView.isUserInteractionEnabled = true // Ensure handle is interactive
         
         // Add container to overlay view
         overlayView.addSubview(episodeContainerView)
-        
         // Set constraints
         NSLayoutConstraint.activate([
             // Handle view constraints
@@ -644,7 +863,7 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             handleView.heightAnchor.constraint(equalToConstant: 5),
             
             // Title label constraints
-            titleLabel.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 0),
             titleLabel.leadingAnchor.constraint(equalTo: episodeContainerView.leadingAnchor, constant: 16),
             
             // Collection view constraints
@@ -660,8 +879,66 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         ])
         
         // Add bottom constraint separately so we can animate it
-        episodeContainerBottomConstraint = episodeContainerView.bottomAnchor.constraint(equalTo: overlayView.bottomAnchor, constant: episodeContainerHeight)
+        let peekHeight: CGFloat = 215 // Show 40 points of the panel initially
+        episodeContainerBottomConstraint = episodeContainerView.bottomAnchor.constraint(
+            equalTo: overlayView.bottomAnchor,
+            constant: episodeContainerHeight - peekHeight) // Show a peek initially
         episodeContainerBottomConstraint?.isActive = true
+        isEpisodeViewVisible = false
+        
+        // Add a label to provide a hint to users
+        let hintLabel = UILabel()
+        var hintText = "Swipe up for episodes"
+        if XLanguage.get() == .Arabic {
+            hintText = "اسحب لأعلى للحلقات"
+        } else if XLanguage.get() == .Kurdish {
+            hintText = "بۆ ئەڵقەکان بەرەو سەرەوە ڕاکێشە"
+        }
+        hintLabel.text = hintText
+        hintLabel.textColor = .white
+        hintLabel.font = UIFont.systemFont(ofSize: 12)
+        hintLabel.textAlignment = .center
+        hintLabel.translatesAutoresizingMaskIntoConstraints = false
+        episodeContainerView.addSubview(hintLabel)
+        
+        NSLayoutConstraint.activate([
+            hintLabel.centerXAnchor.constraint(equalTo: episodeContainerView.centerXAnchor),
+            hintLabel.topAnchor.constraint(equalTo: episodeContainerView.topAnchor, constant: 20)
+        ])
+        
+        // Create a pulsating up arrow to draw attention
+        addPulsingUpArrow(to: episodeContainerView)
+    }
+    
+    private func addPulsingUpArrow(to containerView: UIView) {
+//        let arrowSize: CGFloat = 20
+//        let arrowView = UIImageView(frame: CGRect(x: 0, y: 0, width: arrowSize, height: arrowSize))
+//
+//        // Create an upward arrow
+//        UIGraphicsBeginImageContextWithOptions(CGSize(width: arrowSize, height: arrowSize), false, 0)
+//        let context = UIGraphicsGetCurrentContext()!
+//        context.setFillColor(UIColor.white.cgColor)
+//        context.move(to: CGPoint(x: 0, y: arrowSize))
+//        context.addLine(to: CGPoint(x: arrowSize, y: arrowSize))
+//        context.addLine(to: CGPoint(x: arrowSize/2, y: 0))
+//        context.closePath()
+//        context.fillPath()
+//        let arrowImage = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//
+//        arrowView.image = arrowImage
+//        arrowView.translatesAutoresizingMaskIntoConstraints = false
+//        containerView.addSubview(arrowView)
+//
+//        NSLayoutConstraint.activate([
+//            arrowView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+//            arrowView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12)
+//        ])
+//
+//        // Add pulsating animation
+//        UIView.animate(withDuration: 1.0, delay: 0, options: [.repeat, .autoreverse], animations: {
+//            arrowView.transform = CGAffineTransform(translationX: 0, y: -5)
+//        }, completion: nil)
     }
     
     
@@ -669,7 +946,7 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         guard let containerView = episodeContainerView,
               let constraint = episodeContainerBottomConstraint else { return }
         
-        let translation = gesture.translation(in: containerView)
+        let translation = gesture.translation(in: containerView.superview)
         
         switch gesture.state {
         case .began:
@@ -681,28 +958,33 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             newPosition = min(newPosition, episodeContainerHeight) // Don't slide beyond hidden position
             newPosition = max(newPosition, 0) // Don't slide beyond fully visible position
             
-            // Update constraint
-            constraint.constant = newPosition
+            // Update constraint with animation to make it smoother
+            UIView.animate(withDuration: 0.1, animations: {
+                constraint.constant = newPosition
+                containerView.superview?.layoutIfNeeded()
+            })
             
         case .ended, .cancelled:
             // Determine if view should snap to visible or hidden position
-            let velocity = gesture.velocity(in: containerView).y
+            let velocity = gesture.velocity(in: containerView.superview).y
             let finalPosition: CGFloat
             
-            if velocity < -500 || (constraint.constant < episodeContainerHeight/2 && velocity > -200) {
-                // Fast swipe up or already more than halfway visible without strong downward velocity
+            // If swipe velocity is significant or if panel is more than halfway, complete the action
+            if (velocity < -300) || (constraint.constant < episodeContainerHeight/2 && velocity > -200) {
+                // Fast upward swipe or panel is more than half visible
                 finalPosition = 0
                 isEpisodeViewVisible = true
             } else {
-                finalPosition = episodeContainerHeight
+                // Keep a peek visible (don't fully hide)
+                finalPosition = episodeContainerHeight - 40 // Keep 40pt visible
                 isEpisodeViewVisible = false
             }
             
-            // Animate to final position
-            UIView.animate(withDuration: 0.3, animations: {
+            // Animate to final position with spring effect for natural feel
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
                 constraint.constant = finalPosition
                 containerView.superview?.layoutIfNeeded()
-            })
+            }, completion: nil)
             
         default:
             break
@@ -711,20 +993,22 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
 
     
     @objc private func handleTapGesture(_ gesture: UITapGestureRecognizer) {
+        print("Handle tap gesture received")
         toggleEpisodePanel()
     }
 
+    // 5. Improve toggle function for the panel
     private func toggleEpisodePanel() {
         guard let containerView = episodeContainerView,
               let constraint = episodeContainerBottomConstraint else { return }
         
         isEpisodeViewVisible = !isEpisodeViewVisible
-        let finalPosition = isEpisodeViewVisible ? 0 : episodeContainerHeight
+        let finalPosition = isEpisodeViewVisible ? 0 : episodeContainerHeight - 40 // Keep 40pt visible when collapsed
         
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
             constraint.constant = finalPosition
             containerView.superview?.layoutIfNeeded()
-        })
+        }, completion: nil)
     }
     
     private func addQualityButtonToPlayer() {
@@ -1009,6 +1293,7 @@ extension PlaySeriesVC: UICollectionViewDelegate, UICollectionViewDataSource, UI
             let urlString = EpisodesArray[indexPath.row].image
             let url = URL(string: "https://one-tv.net/assets/images/item/episode/\(urlString)")
             cell.Imagee?.sd_setImage(with: url)
+            cell.Imagee.contentMode = .scaleToFill
             cell.EpisodeLable.text = EpisodesArray[indexPath.row].title
             return cell
         }
@@ -1029,57 +1314,246 @@ extension PlaySeriesVC: UICollectionViewDelegate, UICollectionViewDataSource, UI
         return 10
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            let currentTime = Date().timeIntervalSince1970
-            guard currentTime - lastTapTime > 0.8 else { return }
-            lastTapTime = currentTime
-            
-            AudioServicesPlaySystemSound(1519)
-            
-            if collectionView == episodeCollectionView {
-                // Handle episode selection in player
-                episodeID = EpisodesArray[indexPath.row].id
-                
-                // Save player position if needed
-                let currentPlayerTime = player?.currentTime().seconds ?? 0
-                
-                // Dismiss player
-                playerVC?.dismiss(animated: true) {
-                    // Then play the new episode
-                    self.playSelectedEpisode(at: indexPath)
-                }
-            } else if collectionView == RecommendedCollection {
-                handleRecommendedSelection(at: indexPath)
-            } else {
-                handleEpisodeSelection(at: indexPath)
-            }
+    private func hideLoadingIndicator() {
+        loadingIndicator?.removeFromSuperview()
+        loadingIndicator = nil
     }
     
-    private func handleRecommendedSelection(at indexPath: IndexPath) {
-        guard UserDefaults.standard.string(forKey: "login") == "true" else {
-            showLoginScreen()
-            return
-        }
+    private func changePlayerSource(to url: URL) {
+        // Create new player item
+        let asset = AVURLAsset(url: url)
+        let playerItem = AVPlayerItem(asset: asset)
         
-        LoginAPi.getUserInfo { [weak self] info in
-            guard let self = self else { return }
-            
-            if info.planId == 0 {
-                self.showSubscriptionScreen()
+        // Replace current item
+        player?.replaceCurrentItem(with: playerItem)
+        player?.play()
+        
+        // Update episode number in watch label if needed
+        if let selectedIndex = episodeCollectionView?.indexPathsForSelectedItems?.first?.row {
+            let episodeNumber = selectedIndex + 1
+            if XLanguage.get() == .English {
+                Watchlable.text = "Watch Episode \(episodeNumber)"
+            } else if XLanguage.get() == .Arabic {
+                Watchlable.text = "شاهد الحلقة \(episodeNumber)"
             } else {
-                self.loadSelectedRecommendedItem(at: indexPath)
+                Watchlable.text = "ئەڵقەی \(episodeNumber) ببینە"
             }
         }
     }
     
-    private func handleEpisodeSelection(at indexPath: IndexPath) { print("2222")
-        LoginAPi.getUserInfo { [weak self] info in
-            guard let self = self else { return }
-            print("4444")
-            if info.planId == 0 { print("555")
-                self.showSubscriptionScreen()
-            } else { print("6666")
-                self.playSelectedEpisode(at: indexPath)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let currentTime = Date().timeIntervalSince1970
+        guard currentTime - lastTapTime > 0.8 else { return }
+        lastTapTime = currentTime
+        
+        AudioServicesPlaySystemSound(1519) // Haptic feedback
+        print("Episode selected in player: \(indexPath.row)")
+        if collectionView == episodeCollectionView {
+            if self.is_paid == 0{
+                
+                print("Episode selected in player: \(indexPath.row)")
+                if let previousSelected = collectionView.indexPathsForSelectedItems?.first, previousSelected != indexPath {
+                    collectionView.deselectItem(at: previousSelected, animated: true)
+                }
+                
+                episodeID = EpisodesArray[indexPath.row].id
+                toggleEpisodePanel()
+                showLoadingIndicator()
+                guard CheckInternet.Connection() else {
+                    hideLoadingIndicator()
+                    showNoInternetAlert()
+                    return
+                }
+                
+                checkScreenRecordingStatus()
+                guard !isScreenRecording else {
+                    hideLoadingIndicator()
+                    showScreenRecordingAlert()
+                    return
+                }
+                
+                HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
+                    guard let self = self else { return }
+                    
+                    DispatchQueue.main.async {
+                        self.hideLoadingIndicator()
+                        self.checkScreenRecordingStatus()
+                        guard !self.isScreenRecording else {
+                            self.showScreenRecordingAlert()
+                            return
+                        }
+                        
+                        self.videoQualities = videos.sorted { $0.size > $1.size }
+                        if self.videoQualities.count > 1 {
+                            if self.selectedQualityIndex < self.videoQualities.count,
+                               let url = URL(string: self.videoQualities[self.selectedQualityIndex].url) {
+                                self.changePlayerSource(to: url)
+                            } else {
+                                self.playerVC?.dismiss(animated: true) {
+                                    self.showQualitySelection()
+                                }
+                            }
+                        } else if let firstVideo = self.videoQualities.first,
+                                  let url = URL(string: firstVideo.url) {
+                            self.changePlayerSource(to: url)
+                        } else {
+                            self.showErrorAlert(message: "No video available")
+                        }
+                        
+                    }
+                }
+            }else{
+                showLoadingIndicator()
+                if UserDefaults.standard.string(forKey: "login") == "true"{
+                    LoginAPi.getUserInfo { info in
+                        DispatchQueue.main.async { [self] in
+                            self.loadingIndicator?.removeFromSuperview()
+                            if info.planId == 0{
+                                self.showSubscriptionScreen()
+                            }else{
+                                print("Episode selected in player: \(indexPath.row)")
+                                if let previousSelected = collectionView.indexPathsForSelectedItems?.first, previousSelected != indexPath {
+                                    collectionView.deselectItem(at: previousSelected, animated: true)
+                                }
+                                
+                                episodeID = EpisodesArray[indexPath.row].id
+                                toggleEpisodePanel()
+                                showLoadingIndicator()
+                                guard CheckInternet.Connection() else {
+                                    hideLoadingIndicator()
+                                    showNoInternetAlert()
+                                    return
+                                }
+                                
+                                checkScreenRecordingStatus()
+                                guard !isScreenRecording else {
+                                    hideLoadingIndicator()
+                                    showScreenRecordingAlert()
+                                    return
+                                }
+                                
+                                HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
+                                    guard let self = self else { return }
+                                    
+                                    DispatchQueue.main.async {
+                                        self.hideLoadingIndicator()
+                                        self.checkScreenRecordingStatus()
+                                        guard !self.isScreenRecording else {
+                                            self.showScreenRecordingAlert()
+                                            return
+                                        }
+                                        
+                                        self.videoQualities = videos.sorted { $0.size > $1.size }
+                                        if self.videoQualities.count > 1 {
+                                            if self.selectedQualityIndex < self.videoQualities.count,
+                                               let url = URL(string: self.videoQualities[self.selectedQualityIndex].url) {
+                                                self.changePlayerSource(to: url)
+                                            } else {
+                                                self.playerVC?.dismiss(animated: true) {
+                                                    self.showQualitySelection()
+                                                }
+                                            }
+                                        } else if let firstVideo = self.videoQualities.first,
+                                                  let url = URL(string: firstVideo.url) {
+                                            self.changePlayerSource(to: url)
+                                        } else {
+                                            self.showErrorAlert(message: "No video available")
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    DispatchQueue.main.async {
+                        self.loadingIndicator?.removeFromSuperview()
+                        self.showSubscriptionScreen()
+                    }
+                }
+            
+            }
+            
+    } else if collectionView == RecommendedCollection {
+        self.loadSelectedRecommendedItem(at: indexPath)
+    } else if collectionView == EpisodesColleciton {
+        handleEpisodeSelection(at: indexPath)
+    }
+}
+    
+    private func handleEpisodeSelection(at indexPath: IndexPath) {
+        if self.is_paid == 0{
+            self.playSelectedEpisode(at: indexPath)
+        }else{
+            showLoadingIndicator()
+            if UserDefaults.standard.string(forKey: "login") == "true"{
+                LoginAPi.getUserInfo { info in
+                    DispatchQueue.main.async { [self] in
+                        self.loadingIndicator?.removeFromSuperview()
+                        if info.planId == 0{
+                            self.showSubscriptionScreen()
+                        }else{
+                            episodeID = EpisodesArray[indexPath.row].id
+                            Watchlable.text = "Watch Episode \(indexPath.row + 1)"
+                            
+                            print(self.itemID)
+                            print(episodeID)
+                            
+                            
+                            guard CheckInternet.Connection() else {
+                                showNoInternetAlert()
+                                return
+                            }
+                            
+                            print("fffff")
+                            checkScreenRecordingStatus()
+                            
+                            guard !isScreenRecording else {
+                                showScreenRecordingAlert()
+                                return
+                            }
+                            print("ggggg")
+                            showLoadingIndicator()
+                            
+                            HomeAPI.PlayVideo(item_id: itemID, episode_id: episodeID) { [weak self] videos, remark, status in
+                                guard let self = self else { return }
+                                print("8888")
+                                    DispatchQueue.main.async {
+                                        self.loadingIndicator?.removeFromSuperview()
+                                        self.checkScreenRecordingStatus()
+                                        guard !self.isScreenRecording else {
+                                            self.showScreenRecordingAlert()
+                                            return
+                                        }
+                                        
+                                        guard status == "success" else {
+                                            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                                            let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
+                                            myVC.modalPresentationStyle = .fullScreen
+                                            self.present(myVC, animated: true)
+                                            //self.showErrorAlert(message: "Failed to load video")
+                                            return
+                                        }
+                                        
+                                        self.videoQualities = videos.sorted { $0.size > $1.size }
+                                        
+                                        if self.videoQualities.count > 1 {
+                                            self.showQualitySelection()
+                                        } else if let firstVideo = self.videoQualities.first, let url = URL(string: firstVideo.url) {
+                                            self.playVideo(url: url)
+                                        } else {
+                                            self.showErrorAlert(message: "No video available")
+                                        }
+                                    }
+                               }
+                        }
+                    }
+                }
+            }else{
+                DispatchQueue.main.async {
+                    self.loadingIndicator?.removeFromSuperview()
+                    self.showSubscriptionScreen()
+                }
             }
         }
     }
@@ -1095,36 +1569,32 @@ extension PlaySeriesVC: UICollectionViewDelegate, UICollectionViewDataSource, UI
     private func showSubscriptionScreen() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let subscribeVC = storyboard.instantiateViewController(withIdentifier: "SubscribePlaneVC") as! SubscribePlaneVC
-        subscribeVC.modalPresentationStyle = .overFullScreen
         self.present(subscribeVC, animated: true)
         loadingIndicator?.removeFromSuperview()
     }
     
     private func loadSelectedRecommendedItem(at indexPath: IndexPath) {
-        HomeAPI.GetPaidItemById(i_id: RecommendedArray[indexPath.row].id, episode_id: 0) { [weak self] items, remark, episodes, related, status in
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let myVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+        
+        HomeAPI.GetFreeItemById(i_id: self.RecommendedArray[indexPath.row].id) { [weak self] items, remark, episodes, related in
             guard let self = self else { return }
-            
             DispatchQueue.main.async {
-                self.loadingIndicator?.removeFromSuperview()
-                
-                guard status == "success" else {
-                    self.showErrorAlert(message: "Failed to load item")
-                    return
+                if let loadingIndicator = self.view.viewWithTag(999) as? UIActivityIndicatorView {
+                    loadingIndicator.removeFromSuperview()
                 }
                 
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let playVC = storyboard.instantiateViewController(withIdentifier: "PlaySeriesVC") as! PlaySeriesVC
+                myVC.is_series = (remark == "episode_video")
+                myVC.EpisodesArray = episodes
+                myVC.RecommendedArray = related
+                myVC.Series = items
+                myVC.title = self.RecommendedArray[indexPath.row].title
                 
-                playVC.is_series = (remark == "episode_video")
-                playVC.EpisodesArray = episodes
-                playVC.RecommendedArray = related
-                playVC.Series = items
-                playVC.title = self.RecommendedArray[indexPath.row].title
-                
-                playVC.modalPresentationStyle = .overFullScreen
-                self.present(playVC, animated: true)
+                myVC.modalPresentationStyle = .overFullScreen
+                self.present(myVC, animated: true)
             }
         }
+
     }
     
     private func playSelectedEpisode(at indexPath: IndexPath) { print("777")
@@ -1163,7 +1633,11 @@ extension PlaySeriesVC: UICollectionViewDelegate, UICollectionViewDataSource, UI
                     }
                     
                     guard status == "success" else {
-                        self.showErrorAlert(message: "Failed to load video")
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let myVC = storyboard.instantiateViewController(withIdentifier: "LoginVC") as! LoginVC
+                        myVC.modalPresentationStyle = .fullScreen
+                        self.present(myVC, animated: true)
+                        //self.showErrorAlert(message: "Failed to load video")
                         return
                     }
                     
@@ -1177,13 +1651,11 @@ extension PlaySeriesVC: UICollectionViewDelegate, UICollectionViewDataSource, UI
                         self.showErrorAlert(message: "No video available")
                     }
                 }
-                
-            
-        }
-        
-        
-    }
+           }
+      }
 }
+
+
 extension PlaySeriesVC: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < -150 {
@@ -1193,14 +1665,9 @@ extension PlaySeriesVC: UIScrollViewDelegate {
 }
 
 
-
-
-
 class EpisodePlayerCell: UICollectionViewCell {
     
     let imageView = UIImageView()
-    let titleLabel = UILabel()
-    let overlayView = UIView()
     let episodeNumberLabel = UILabel()
     
     override init(frame: CGRect) {
@@ -1217,15 +1684,11 @@ class EpisodePlayerCell: UICollectionViewCell {
         // Configure image view
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 8
+        imageView.layer.cornerRadius = 10
+        imageView.isUserInteractionEnabled = false // Ensure no interaction blocking
         imageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(imageView)
         
-        // Configure overlay for better text readability
-        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        overlayView.translatesAutoresizingMaskIntoConstraints = false
-        overlayView.layer.cornerRadius = 8
-        contentView.addSubview(overlayView)
         
         // Configure episode number label
         episodeNumberLabel.font = UIFont.boldSystemFont(ofSize: 12)
@@ -1237,35 +1700,44 @@ class EpisodePlayerCell: UICollectionViewCell {
         episodeNumberLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(episodeNumberLabel)
         
-        // Configure title label
-        titleLabel.font = UIFont.systemFont(ofSize: 12)
-        titleLabel.textColor = .white
-        titleLabel.numberOfLines = 2
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(titleLabel)
         
         // Setup constraints
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
-            
-            overlayView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
-            overlayView.heightAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 215),
             
             episodeNumberLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             episodeNumberLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
             episodeNumberLabel.widthAnchor.constraint(equalToConstant: 20),
             episodeNumberLabel.heightAnchor.constraint(equalToConstant: 20),
-            
-            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 4),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -2)
+        
         ])
+        self.isUserInteractionEnabled = true
+
+        
+        // Add tap animation
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cellTapped))
+//        contentView.addGestureRecognizer(tapGesture)
+    }
+    @objc private func cellTapped() {
+        // Add visual feedback when tapped
+        print("Cell tapped")
+        UIView.animate(withDuration: 0.1, animations: {
+            self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.transform = CGAffineTransform.identity
+            }
+        }
+    }
+    
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = nil
+        episodeNumberLabel.text = ""
     }
     
     func configure(with episode: Episode, index: Int) {
@@ -1274,7 +1746,6 @@ class EpisodePlayerCell: UICollectionViewCell {
             imageView.sd_setImage(with: url)
         }
         
-        titleLabel.text = episode.title
         episodeNumberLabel.text = "\(index + 1)"
     }
 }
