@@ -94,7 +94,7 @@ class LoginVC: UIViewController , UITextFieldDelegate, UITextViewDelegate, Inter
         self.Phone.withExamplePlaceholder = false
         self.Phone.placeholder = "750 123 45 67"
         self.Phone.withDefaultPickerUI = true
-        
+         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)
         

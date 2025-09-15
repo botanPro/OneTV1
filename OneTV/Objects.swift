@@ -123,7 +123,7 @@ class SlidesObjectAPI {
                                                      updatedAt: item["subCategory"]["updatedAt"].stringValue), isPaid: item["is_paid"].intValue,
                        awards: item["awards"].stringValue,
                             revenue: item["revenue"].stringValue,
-                            budget: item["budget"].stringValue
+                            budget: item["budget"].stringValue, year: item["year"].stringValue
                        )
                         
                     let sliderObj = Slider(id:id , itemId:itemId , image:image , captionShow :captionShow , status :status , createdAt :createdAt , updatedAt :updatedAt , item:itemObj, image_png: image_png)
@@ -210,6 +210,7 @@ class Item {
     let slug: String
     let title: String
     let previewText: String
+    let year: String
     let description: String
     let team: Team
     let image: ImagePaths
@@ -241,7 +242,7 @@ class Item {
          itemType: Int, status: Int, single: Int, trending: Int, featured: Int,
          version: Int, tags: String, ratings: String, view: Int, isTrailer: Int,
          rentPrice: String, rentalPeriod: Int, excludePlan: Int, createdAt: String,
-         updatedAt: String, category: Category, subCategory: SubCategory, isPaid: Int, awards: String, revenue: String, budget: String) {
+         updatedAt: String, category: Category, subCategory: SubCategory, isPaid: Int, awards: String, revenue: String, budget: String, year: String) {
         
         self.id = id
         self.categoryId = categoryId
@@ -274,6 +275,8 @@ class Item {
         self.awards = awards
         self.revenue = revenue
         self.budget = budget
+        
+        self.year = year
         
     }
 }
@@ -797,12 +800,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -857,12 +861,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -912,12 +917,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -968,12 +974,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1026,12 +1033,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1084,12 +1092,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1143,12 +1152,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1200,12 +1210,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1261,12 +1272,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1320,12 +1332,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1380,12 +1393,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: item["image"]["landscape"].stringValue, portrait: item["image"]["portrait"].stringValue)
                     let team = Team(director: item["team"]["director"].stringValue, producer: item["team"]["producer"].stringValue, casts: item["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: item["category"]["id"].intValue, name: item["category"]["name"].stringValue, status: item["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: item["sub_category"]["id"].intValue, name: item["sub_category"]["name"].stringValue, categoryId: item["sub_category"]["category_id"].intValue, status: item["sub_category"]["status"].intValue, createdAt: item["sub_category"]["created_at"].stringValue, updatedAt: item["sub_category"]["updated_at"].stringValue)
                     print(id)
-                    let wishs = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let wishs = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     print(wishs.title)
                     WishList.append(wishs)
                 }
@@ -1444,12 +1458,13 @@ class HomeAPI {
                 let awards = data["awards"].stringValue
                 let revenue = data["revenue"].stringValue
                 let budget = data["budget"].stringValue
+                let year = data["year"].stringValue
                     let images = ImagePaths(landscape: data["image"]["landscape"].stringValue, portrait: data["image"]["portrait"].stringValue)
                     let team = Team(director: data["team"]["director"].stringValue, producer: data["team"]["producer"].stringValue, casts: data["team"]["casts"].stringValue, genres: data["team"]["genres"].stringValue, language: data["team"]["language"].stringValue)
                     let category = Category(id: data["category"]["id"].intValue, name: data["category"]["name"].stringValue, status: data["category"]["status"].intValue, createdAt: data["category"]["created_at"].stringValue, updatedAt: data["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: data["sub_category"]["id"].intValue, name: data["sub_category"]["name"].stringValue, categoryId: data["sub_category"]["category_id"].intValue, status: data["sub_category"]["status"].intValue, createdAt: data["sub_category"]["created_at"].stringValue, updatedAt: data["sub_category"]["updated_at"].stringValue)
 
-                    let item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                let item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
 
                 
                 let episodes = jsonData["data"]["episodes"].arrayValue
@@ -1500,12 +1515,13 @@ class HomeAPI {
                     let awards = item["awards"].stringValue
                     let revenue = item["revenue"].stringValue
                     let budget = item["budget"].stringValue
+                    let year = item["year"].stringValue
                     let images = ImagePaths(landscape: item["image"]["landscape"].stringValue, portrait: item["image"]["portrait"].stringValue)
                     let team = Team(director: item["team"]["director"].stringValue, producer: item["team"]["producer"].stringValue, casts: item["team"]["casts"].stringValue, genres: item["team"]["genres"].stringValue, language: item["team"]["language"].stringValue)
                     let category = Category(id: item["category"]["id"].intValue, name: item["category"]["name"].stringValue, status: item["category"]["status"].intValue, createdAt: item["category"]["created_at"].stringValue, updatedAt: item["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: item["sub_category"]["id"].intValue, name: item["sub_category"]["name"].stringValue, categoryId: item["sub_category"]["category_id"].intValue, status: item["sub_category"]["status"].intValue, createdAt: item["sub_category"]["created_at"].stringValue, updatedAt: item["sub_category"]["updated_at"].stringValue)
 
-                    let Item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let Item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     relatedItemsArray.append(Item)
                 }
                 
@@ -1567,12 +1583,13 @@ class HomeAPI {
                 let awards = data["awards"].stringValue
                 let revenue = data["revenue"].stringValue
                 let budget = data["budget"].stringValue
+                let year = data["year"].stringValue
                     let images = ImagePaths(landscape: data["image"]["landscape"].stringValue, portrait: data["image"]["portrait"].stringValue)
                     let team = Team(director: data["team"]["director"].stringValue, producer: data["team"]["producer"].stringValue, casts: data["team"]["casts"].stringValue, genres: data["team"]["genres"].stringValue, language: data["team"]["language"].stringValue)
                     let category = Category(id: data["category"]["id"].intValue, name: data["category"]["name"].stringValue, status: data["category"]["status"].intValue, createdAt: data["category"]["created_at"].stringValue, updatedAt: data["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: data["sub_category"]["id"].intValue, name: data["sub_category"]["name"].stringValue, categoryId: data["sub_category"]["category_id"].intValue, status: data["sub_category"]["status"].intValue, createdAt: data["sub_category"]["created_at"].stringValue, updatedAt: data["sub_category"]["updated_at"].stringValue)
 
-                    let item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                let item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
 
                 
                 let episodes = jsonData["data"]["episodes"].arrayValue
@@ -1622,12 +1639,13 @@ class HomeAPI {
                     let awards = item["awards"].stringValue
                     let revenue = item["revenue"].stringValue
                     let budget = item["budget"].stringValue
+                    let year = item["year"].stringValue
                     let images = ImagePaths(landscape: item["image"]["landscape"].stringValue, portrait: item["image"]["portrait"].stringValue)
                     let team = Team(director: item["team"]["director"].stringValue, producer: item["team"]["producer"].stringValue, casts: item["team"]["casts"].stringValue, genres: item["team"]["genres"].stringValue, language: item["team"]["language"].stringValue)
                     let category = Category(id: item["category"]["id"].intValue, name: item["category"]["name"].stringValue, status: item["category"]["status"].intValue, createdAt: item["category"]["created_at"].stringValue, updatedAt: item["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: item["sub_category"]["id"].intValue, name: item["sub_category"]["name"].stringValue, categoryId: item["sub_category"]["category_id"].intValue, status: item["sub_category"]["status"].intValue, createdAt: item["sub_category"]["created_at"].stringValue, updatedAt: item["sub_category"]["updated_at"].stringValue)
 
-                    let Item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let Item = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     relatedItemsArray.append(Item)
                 }
                 
@@ -1732,12 +1750,13 @@ class HomeAPI {
                     let awards = free["awards"].stringValue
                     let revenue = free["revenue"].stringValue
                     let budget = free["budget"].stringValue
+                    let year = free["year"].stringValue
                     let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                     let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                     let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     FreeZone.append(freeZone)
                 }
                 
@@ -1768,12 +1787,13 @@ class HomeAPI {
                     let awards = most["awards"].stringValue
                     let revenue = most["revenue"].stringValue
                     let budget = most["budget"].stringValue
+                    let year = most["year"].stringValue
                     let images = ImagePaths(landscape: most["image"]["landscape"].stringValue, portrait: most["image"]["portrait"].stringValue)
                     let team = Team(director: most["team"]["director"].stringValue, producer: most["team"]["producer"].stringValue, casts: most["team"]["casts"].stringValue, genres: most["team"]["genres"].stringValue, language: most["team"]["language"].stringValue)
                     let category = Category(id: most["category"]["id"].intValue, name: most["category"]["name"].stringValue, status: most["category"]["status"].intValue, createdAt: most["category"]["created_at"].stringValue, updatedAt: most["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: most["sub_category"]["id"].intValue, name: most["sub_category"]["name"].stringValue, categoryId: most["sub_category"]["category_id"].intValue, status: most["sub_category"]["status"].intValue, createdAt: most["sub_category"]["created_at"].stringValue, updatedAt: most["sub_category"]["updated_at"].stringValue)
 
-                    let mostReviewd = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let mostReviewd = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     MostViewd.append(mostReviewd)
                 }
                 
@@ -1805,12 +1825,13 @@ class HomeAPI {
                     let awards = new["awards"].stringValue
                     let revenue = new["revenue"].stringValue
                     let budget = new["budget"].stringValue
+                    let year = new["year"].stringValue
                     let images = ImagePaths(landscape: new["image"]["landscape"].stringValue, portrait: new["image"]["portrait"].stringValue)
                     let team = Team(director: new["team"]["director"].stringValue, producer: new["team"]["producer"].stringValue, casts: new["team"]["casts"].stringValue, genres: new["team"]["genres"].stringValue, language: new["team"]["language"].stringValue)
                     let category = Category(id: new["category"]["id"].intValue, name: new["category"]["name"].stringValue, status: new["category"]["status"].intValue, createdAt: new["category"]["created_at"].stringValue, updatedAt: new["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: new["sub_category"]["id"].intValue, name: new["sub_category"]["name"].stringValue, categoryId: new["sub_category"]["category_id"].intValue, status: new["sub_category"]["status"].intValue, createdAt: new["sub_category"]["created_at"].stringValue, updatedAt: new["sub_category"]["updated_at"].stringValue)
 
-                    let recentlyAdded = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let recentlyAdded = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     RecentlyAdded.append(recentlyAdded)
                 }
                 
@@ -1841,12 +1862,13 @@ class HomeAPI {
                     let awards = new["awards"].stringValue
                     let revenue = new["revenue"].stringValue
                     let budget = new["budget"].stringValue
+                    let year = new["year"].stringValue
                     let images = ImagePaths(landscape: new["image"]["landscape"].stringValue, portrait: new["image"]["portrait"].stringValue)
                     let team = Team(director: new["team"]["director"].stringValue, producer: new["team"]["producer"].stringValue, casts: new["team"]["casts"].stringValue, genres: new["team"]["genres"].stringValue, language: new["team"]["language"].stringValue)
                     let category = Category(id: new["category"]["id"].intValue, name: new["category"]["name"].stringValue, status: new["category"]["status"].intValue, createdAt: new["category"]["created_at"].stringValue, updatedAt: new["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: new["sub_category"]["id"].intValue, name: new["sub_category"]["name"].stringValue, categoryId: new["sub_category"]["category_id"].intValue, status: new["sub_category"]["status"].intValue, createdAt: new["sub_category"]["created_at"].stringValue, updatedAt: new["sub_category"]["updated_at"].stringValue)
 
-                    let recentlyAdded = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let recentlyAdded = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     LatestSeries.append(recentlyAdded)
                 }
                 
@@ -1888,12 +1910,13 @@ class HomeAPI {
                     let awards = reviewd["awards"].stringValue
                     let revenue = reviewd["revenue"].stringValue
                     let budget = reviewd["budget"].stringValue
+                    let year = reviewd["year"].stringValue
                     let images = ImagePaths(landscape: reviewd["image"]["landscape"].stringValue, portrait: reviewd["image"]["portrait"].stringValue)
                     let team = Team(director: reviewd["team"]["director"].stringValue, producer: reviewd["team"]["producer"].stringValue, casts: reviewd["team"]["casts"].stringValue, genres: reviewd["team"]["genres"].stringValue, language: reviewd["team"]["language"].stringValue)
                     let category = Category(id: reviewd["category"]["id"].intValue, name: reviewd["category"]["name"].stringValue, status: reviewd["category"]["status"].intValue, createdAt: reviewd["category"]["created_at"].stringValue, updatedAt: reviewd["category"]["updated_at"].stringValue)
                     let subCategory = SubCategory(id: reviewd["sub_category"]["id"].intValue, name: reviewd["sub_category"]["name"].stringValue, categoryId: reviewd["sub_category"]["category_id"].intValue, status: reviewd["sub_category"]["status"].intValue, createdAt: reviewd["sub_category"]["created_at"].stringValue, updatedAt: reviewd["sub_category"]["updated_at"].stringValue)
 
-                    let reviewd = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                    let reviewd = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                     MostReviewd.append(reviewd)
                 }
                 
@@ -2490,16 +2513,11 @@ class UpdateOneSignalIdAPI{
             print(String(describing: error))
             return
           }
-          print(String(data: data, encoding: .utf8)!)
+          print(response)
         }
-
         task.resume()
     }
 }
-
-
-
-
 
 
 class SocialObject{

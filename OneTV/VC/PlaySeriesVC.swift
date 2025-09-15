@@ -5,6 +5,7 @@ import AVFoundation
 import AVKit
 import Drops
 import MediaPlayer
+
 class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLoaderDelegate{
     
     
@@ -314,7 +315,6 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             let formattedBudget = formatter.string(from: NSNumber(value: budgetValue))
             return formattedBudget ?? budget
         }
-        
         return budget
     }
 
@@ -347,7 +347,6 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
             }
         }
         
-        
         //Watchlable.text = is_trailer ? "Watch Trailer" : Watchlable.text
         
         guard let series = Series else { return }
@@ -359,7 +358,13 @@ class PlaySeriesVC: UIViewController, InternetStatusIndicable, AVAssetResourceLo
         self.Revenue.text = formatBudget(series.revenue)
         Rate.text = "\(series.ratings)"
         Views.text = formatViews(series.view)
-        year.text = "Languages | \(series.team.language) • \(series.team.genres)"
+        if XLanguage.get() == .English{
+            year.text = "Language | \(series.team.language) • \(series.team.genres) • \(series.year)"
+        } else if XLanguage.get() == .Arabic{
+            year.text = "اللغة | \(series.team.language) • \(series.team.genres) • \(series.year)"
+        }else{
+            year.text = "زمان | \(series.team.language) • \(series.team.genres) • \(series.year)"
+        }
         CostTextView.text = series.team.casts
         if XLanguage.get() == .English{
             self.Director.text = "Director:\(series.team.director),\n\(series.team.casts)"

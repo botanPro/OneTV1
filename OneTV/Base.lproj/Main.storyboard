@@ -1237,6 +1237,7 @@
                         <outlet property="Search" destination="Vv1-w9-GEC" id="9OI-XC-F64"/>
                         <outlet property="SecondYear" destination="SYF-3o-AwC" id="y0k-2l-I5w"/>
                         <outlet property="ShowFillter" destination="V1c-IY-7qv" id="vGN-ua-UFj"/>
+                        <outlet property="Stackbottom" destination="2FO-W6-hvq" id="8kS-0H-D1E"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MfB-sk-Z8z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1906,7 +1907,7 @@
                                 </connections>
                             </collectionView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nJC-04-n8F">
-                                <rect key="frame" x="20" y="413" width="353" height="355"/>
+                                <rect key="frame" x="20" y="414" width="353" height="355"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fwt-g3-RHG">
                                         <rect key="frame" x="309" y="14" width="30" height="30"/>
@@ -2197,7 +2198,7 @@
                             <constraint firstItem="BvZ-my-Fvc" firstAttribute="bottom" secondItem="anF-3g-Taz" secondAttribute="bottom" id="eka-Z7-lqv"/>
                             <constraint firstItem="BvZ-my-Fvc" firstAttribute="trailing" secondItem="nJC-04-n8F" secondAttribute="trailing" constant="20" id="fHd-FB-UCj"/>
                             <constraint firstAttribute="trailing" secondItem="anF-3g-Taz" secondAttribute="trailing" id="qtN-om-I74"/>
-                            <constraint firstItem="BvZ-my-Fvc" firstAttribute="bottom" secondItem="nJC-04-n8F" secondAttribute="bottom" constant="1" id="xA8-7x-fHd"/>
+                            <constraint firstItem="BvZ-my-Fvc" firstAttribute="bottom" secondItem="nJC-04-n8F" secondAttribute="bottom" id="xA8-7x-fHd"/>
                             <constraint firstItem="q5G-Kf-XRG" firstAttribute="top" secondItem="BvZ-my-Fvc" secondAttribute="top" id="zyV-fG-pqw"/>
                         </constraints>
                     </view>
@@ -2247,6 +2248,7 @@
                         <outlet property="SeriesCollection" destination="EuB-Xl-EtI" id="DrQ-r6-I4i"/>
                         <outlet property="SeriesTitile" destination="U1o-qx-CTc" id="Hfx-Lw-ciV"/>
                         <outlet property="ShowFillter" destination="BXs-6P-jVJ" id="2n2-mF-9kI"/>
+                        <outlet property="Stackbottom" destination="xA8-7x-fHd" id="98e-VK-p2z"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KZe-ce-R1e" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -4197,7 +4199,7 @@
                                                                             </userDefinedRuntimeAttribute>
                                                                             <userDefinedRuntimeAttribute type="string" keyPath="ArabicText" value="ذات الصلة"/>
                                                                             <userDefinedRuntimeAttribute type="string" keyPath="EnglishText" value="Recommended"/>
-                                                                            <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="وەکهەڤ"/>
+                                                                            <userDefinedRuntimeAttribute type="string" keyPath="KurdishText" value="پەیوەست"/>
                                                                         </userDefinedRuntimeAttributes>
                                                                     </label>
                                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PpU-Rv-cmO">

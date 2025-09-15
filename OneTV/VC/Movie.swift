@@ -12,7 +12,7 @@ import MBRadioCheckboxButton
 import EFInternetIndicator
 import CRRefresh
 import SwiftyJSON
-class Movie: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate{
+class Movie: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate,  UITextFieldDelegate{
     
     
     
@@ -158,7 +158,56 @@ class Movie: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate{
             self.Newest.titleLabel?.font = UIFont(name: "PeshangDes2", size: 12)!
             self.MostViewed.titleLabel?.font = UIFont(name: "PeshangDes2", size: 12)!
         }
-   
+        
+        
+       
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+      
+    @IBOutlet weak var Stackbottom: NSLayoutConstraint!
+    
+    var count = 1
+    @objc func keyboardWasShown(notification: NSNotification) {
+        if count == 1{
+           count += 1
+        let info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        self.Stackbottom.constant = -100
+        }
+    }
+    
+    @objc func keyboardWasHiden(notification: NSNotification) {
+        count = 1
+        self.Stackbottom.constant = 0
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    
+    func addDoneButtonOnKeyboard() {
+        let toolbar: UIToolbar = UIToolbar()
+        toolbar.sizeToFit()
+
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let done: UIBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonAction))
+
+        toolbar.setItems([flexSpace, done], animated: false)
+        toolbar.isUserInteractionEnabled = true
+
+        FirstYear.inputAccessoryView = toolbar
+        SecondYear.inputAccessoryView = toolbar
+    }
+    
+    
+    @objc func doneButtonAction() {
+        FirstYear.resignFirstResponder()
+        SecondYear.resignFirstResponder()
     }
     
     
@@ -204,6 +253,15 @@ class Movie: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate{
             getCategoriesForFilter()
         })
         
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWasHiden), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        addDoneButtonOnKeyboard()
+
+        FirstYear.delegate = self
+        SecondYear.delegate = self
+   
     }
     
     private var lastTapTime: TimeInterval = 0
@@ -296,12 +354,13 @@ class Movie: UIViewController ,InternetStatusIndicable, UIScrollViewDelegate{
                 let awards = free["awards"].stringValue
                 let revenue = free["revenue"].stringValue
                 let budget = free["budget"].stringValue
+                let year = free["year"].stringValue
                 let images = ImagePaths(landscape: free["image"]["landscape"].stringValue, portrait: free["image"]["portrait"].stringValue)
                 let team = Team(director: free["team"]["director"].stringValue, producer: free["team"]["producer"].stringValue, casts: free["team"]["casts"].stringValue, genres: free["team"]["genres"].stringValue, language: free["team"]["language"].stringValue)
                 let category = Category(id: free["category"]["id"].intValue, name: free["category"]["name"].stringValue, status: free["category"]["status"].intValue, createdAt: free["category"]["created_at"].stringValue, updatedAt: free["category"]["updated_at"].stringValue)
                 let subCategory = SubCategory(id: free["sub_category"]["id"].intValue, name: free["sub_category"]["name"].stringValue, categoryId: free["sub_category"]["category_id"].intValue, status: free["sub_category"]["status"].intValue, createdAt: free["sub_category"]["created_at"].stringValue, updatedAt: free["sub_category"]["updated_at"].stringValue)
 
-                let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget)
+                let freeZone = Item(id: id, categoryId: categoryId, subCategoryId: subCategoryId, slug: slug, title: title, previewText: previewText, description: description, team: team, image: images, itemType: itemType, status: status, single: single, trending: trending, featured: featured, version: version, tags: tags, ratings: ratings, view: view, isTrailer: isTrailer, rentPrice: rentPrice, rentalPeriod: rentalPeriod, excludePlan: excludePlan, createdAt: createdAt, updatedAt: updatedAt, category: category, subCategory: subCategory, isPaid: ispaid, awards: awards, revenue: revenue, budget: budget, year: year)
                 FreeZone.append(freeZone)
             }
             
